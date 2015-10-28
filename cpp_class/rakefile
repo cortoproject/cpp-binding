@@ -1,0 +1,6 @@
+TARGET = :cpp_class
+
+USE_LIBRARY = ["cpp_common"]
+CFLAGS = ["-Wunused-parameter"]
+
+require "#{ENV['CORTO_BUILD']}/generator"

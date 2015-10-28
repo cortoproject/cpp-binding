@@ -1,0 +1,7 @@
+
+*.o
+*.so
+bin/*
+generators/bin/*
+libraries/bin/*
+components/bin/*
