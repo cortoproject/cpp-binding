@@ -139,7 +139,6 @@ cpp_openScope(
             corto_id id;
             toPtr = toStack[i];
             g_fileWrite(file, "namespace %s {\n", g_oid(g_fileGetGenerator(file), toPtr, id));
-            g_fileIndent(file);
             i++;
         }
 
@@ -151,9 +150,10 @@ cpp_openScope(
 void cpp_closeScope(g_file file) {
     corto_object ptr;
 
+    g_fileWrite(file, "\n");
+
     if((ptr = g_fileScopeGet(file))) {
         while((ptr = corto_parentof(ptr))) {
-            g_fileDedent(file);
             g_fileWrite(file, "}\n");
         }
 

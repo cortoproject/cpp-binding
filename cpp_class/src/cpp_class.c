@@ -6,6 +6,7 @@
  */
 
 #include "corto.h"
+#include "cpp_class.h"
 #include "cpp_common.h"
 
 static corto_string cpp_escapeName(corto_string fullname, corto_id escaped) {
@@ -459,7 +460,7 @@ static int cpp_class(corto_interface class, corto_generator g) {
     cpp_openScope(file, corto_parentof(class));
 
     /* Write class-definintion */
-    g_fileWrite(file, "class %s", g_oid(g, class, id));
+    g_fileWrite(file, "\nclass %s", g_oid(g, class, id));
     if(corto_class_instanceof(corto_struct_o, class)) {
         if(corto_interface(class)->base) {
             corto_id base;
@@ -598,12 +599,16 @@ static int cpp_implWalk(corto_object o, void* userData) {
         if(cpp_class(corto_interface(o), userData)) {
             goto error;
         }
-        // cpp_impl(o, userData);
+        if (cpp_impl(o, userData)) {
+            goto error;
+        }
     }else if(!corto_scopeWalk(o, cpp_checkProcedures, NULL) && (o != corto_object_o)) {
         if(cpp_scope(o, userData)) {
             goto error;
         }
-        // cpp_impl(o, userData);
+        if (cpp_impl(o, userData)) {
+            goto error;
+        }
     }
 
     return 1;
@@ -615,6 +620,8 @@ error:
 corto_int16 corto_genMain(corto_generator g) {
 
     g_setIdKind(g, CORTO_GENERATOR_ID_CLASS_UPPER);
+
+    corto_mkdir(".corto");
 
     /* Walk classes */
     if(!g_walkRecursive(g, cpp_implWalk, g)) {
