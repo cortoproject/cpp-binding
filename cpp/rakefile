@@ -1,0 +1,7 @@
+
+PACKAGE = 'corto/cpp'
+
+NOCORTO = true
+LANGUAGE = "c++"
+
+require "#{ENV['CORTO_BUILD']}/package"
