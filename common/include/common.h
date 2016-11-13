@@ -23,8 +23,6 @@ typedef enum cpp_refKind {
 } cpp_refKind;
 
 char* _cpp_typeIdentifier(g_generator g, corto_type t, cpp_context context, cpp_refKind refKind, corto_id buffer);
-void cpp_openScope(g_file file, corto_object o);
-void cpp_closeScope(g_file file);
 g_file cpp_headerOpen(g_generator g, corto_object o);
 void cpp_headerClose(g_generator g, g_file file);
 

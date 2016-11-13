@@ -1,6 +1,0 @@
-
-PACKAGE = 'corto/gen/cpp/fluent'
-
-NOCORTO = true
-
-require "#{ENV['CORTO_BUILD']}/package"

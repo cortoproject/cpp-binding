@@ -1,16 +1,7 @@
 
-#include "class/class.h"
+#include "corto/gen/cpp/class/class.h"
 #include "corto/gen/c/common/common.h"
 #include "corto/gen/cpp/common/common.h"
-
-typedef struct cpp_classWalk_t {
-    g_generator g;
-    g_file mainheader;
-    g_file mainsource;
-    g_file hiddenImpl;
-    g_file header;
-    g_file source;
-} cpp_classWalk_t;
 
 static corto_int16 cpp_mainHeaderOpen(cpp_classWalk_t *data) {
     data->mainheader = cpp_headerOpen(data->g, g_getCurrent(data->g));
@@ -18,13 +9,18 @@ static corto_int16 cpp_mainHeaderOpen(cpp_classWalk_t *data) {
         goto error;
     }
 
+    g_fileWrite(data->mainheader, "#include <corto/cpp/cpp.h>\n");
+    g_fileWrite(data->mainheader, "\n");
+
     cpp_openScope(data->mainheader, g_getCurrent(data->g));
 
     g_fileWrite(data->mainheader, "\n");
     g_fileWrite(data->mainheader, "namespace _c {\n");
     g_fileWrite(data->mainheader, "#include \"_type.h\"\n");
-    g_fileWrite(data->mainheader, "#include \"_meta.h\"\n");
-    g_fileWrite(data->mainheader, "}\n\n");
+    g_fileWrite(data->mainheader, "#include \"_load.h\"\n");
+    g_fileWrite(data->mainheader, "}\n");
+    cpp_closeScope(data->mainheader);
+    g_fileWrite(data->mainheader, "\n");
 
     return 0;
 error:
@@ -313,7 +309,6 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     cpp_openScope(data->mainheader, corto_parentof(g_getCurrent(data->g)));
     c_include(data->g, data->mainheader, type);
 
-    g_fileWrite(data->header, "\n");
     g_fileWrite(data->header,"#include <%s>\n", c_mainheader(data->g, mainheader));
     g_fileWrite(data->header, "\n");
     cpp_openScope(data->header, g_getCurrent(data->g));
@@ -326,6 +321,8 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
         corto_path(baseId, g_getCurrent(data->g), type->base, "::");
         cpp_typeIdentifier(data->g, type->base, Cpp_Parameter, Cpp_ByCRef, baseCType);
     }
+
+    g_fileWrite(data->header, "// C++ wrapper class for corto object\n", corto_fullpath(NULL, type));
     g_fileWrite(data->header, "class %s : public %s\n", id, baseId);
     g_fileWrite(data->header, "{\n");
     g_fileWrite(data->header, "public:\n");
@@ -352,6 +349,10 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
 
     g_fileDedent(data->header);
     g_fileWrite(data->header, "};\n");
+
+    if (cpp_fluentDecl(corto_type(type), baseId, data)) {
+        goto error;
+    }
 
     cpp_headerClose(data->g, data->header);
 

@@ -9,7 +9,16 @@
 #include <corto/corto.h>
 
 /* $header() */
-/* You can put your own definitions here! */
+typedef struct cpp_classWalk_t {
+    g_generator g;
+    g_file mainheader;
+    g_file mainsource;
+    g_file hiddenImpl;
+    g_file header;
+    g_file source;
+} cpp_classWalk_t;
+
+corto_int16 cpp_fluentDecl(corto_type type, char *base, cpp_classWalk_t *data);
 /* $end */
 
 #ifdef __cplusplus
@@ -20,4 +29,3 @@ extern "C" {
 }
 #endif
 #endif
-
