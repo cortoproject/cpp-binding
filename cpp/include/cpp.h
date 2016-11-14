@@ -8,6 +8,7 @@
 
 namespace corto {
 extern ::corto::Object root;
+extern ::corto::Object null;
 }
 
 #endif /* CORTO_CPP_H */

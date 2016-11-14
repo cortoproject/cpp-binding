@@ -22,14 +22,16 @@ typedef enum cpp_refKind {
     Cpp_ByCRef
 } cpp_refKind;
 
-char* _cpp_typeIdentifier(g_generator g, corto_type t, cpp_context context, cpp_refKind refKind, corto_id buffer);
+char* _cpp_typeId(g_generator g, corto_type t, cpp_context context, cpp_refKind refKind, corto_id buffer);
+char* cpp_varId(g_generator g, corto_object o, corto_id buffer);
+
 g_file cpp_headerOpen(g_generator g, corto_object o);
 void cpp_headerClose(g_generator g, g_file file);
 
 g_file cpp_sourceOpen(g_generator g, corto_object o);
 void cpp_sourceClose(g_generator g, g_file file);
 
-#define cpp_typeIdentifier(g, t, context, refKind, buffer) _cpp_typeIdentifier(g, corto_type(t), context, refKind, buffer)
+#define cpp_typeId(g, t, context, refKind, buffer) _cpp_typeId(g, corto_type(t), context, refKind, buffer)
 
 #ifdef __cplusplus
 }

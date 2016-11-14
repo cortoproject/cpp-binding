@@ -21,7 +21,7 @@ static corto_bool cpp_cRequiresPtr(corto_type t, cpp_context context, corto_bool
     return FALSE;
 }
 
-char* _cpp_typeIdentifier(g_generator g, corto_type t, cpp_context context, cpp_refKind refKind, corto_id buffer)
+char* _cpp_typeId(g_generator g, corto_type t, cpp_context context, cpp_refKind refKind, corto_id buffer)
 {
     corto_id typeName;
     corto_bool complex = FALSE;
@@ -36,7 +36,7 @@ char* _cpp_typeIdentifier(g_generator g, corto_type t, cpp_context context, cpp_
     }
 
     if (complex && ((refKind == Cpp_ByCRef) || (refKind == Cpp_ByCVal))) {
-        sprintf(buffer, "_c::%s", corto_path(NULL, g_getCurrent(g), t, "::"));
+        sprintf(buffer, "%s::%s", cpp_cprefix(), corto_path(NULL, g_getCurrent(g), t, "::"));
         if (cpp_cRequiresPtr(t, context, refKind == Cpp_ByCRef)) {
             strcat(buffer, "*");
         }
@@ -44,6 +44,13 @@ char* _cpp_typeIdentifier(g_generator g, corto_type t, cpp_context context, cpp_
         strcpy(buffer, typeName);
     }
 
+    return buffer;
+}
+
+char* cpp_varId(g_generator g, corto_object o, corto_id buffer) {
+    corto_id cId;
+    c_varId(g, o, cId);
+    sprintf(buffer, "%s::%s", cpp_cprefix(), cId);
     return buffer;
 }
 

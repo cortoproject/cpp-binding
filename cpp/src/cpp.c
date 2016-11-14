@@ -3,6 +3,7 @@
 
 namespace corto {
 ::corto::Object root(::root_o);
+::corto::Object null;
 }
 
 /* cortomain is called when the package is loaded by Corto. It is a good
