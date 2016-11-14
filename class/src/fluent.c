@@ -41,8 +41,9 @@ static corto_int16 cpp_fluent_create(corto_type type, cpp_classWalk_t *data) {
     cpp_typeId(data->g, type, Cpp_Return, Cpp_ByCRef, cId);
     cpp_varId(data->g,type, varId);
     g_oid(data->g, type, id);
-    g_fileWrite(data->header, "%s create()\n", id);
-    g_fileWrite(data->header,
+    g_fileWrite(data->header, "%s create();\n", id);
+    g_fileWrite(data->hiddenImpl, "%s %s_t::create()\n", id, corto_path(NULL, g_getCurrent(data->g), type, "::"));
+    g_fileWrite(data->hiddenImpl,
       "    { return %s((%s)((corto::Object_t*)this)->create((corto_type)%s, &this->m_value)); }\n",
       id, cId, varId);
     return 0;

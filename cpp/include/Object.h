@@ -19,8 +19,8 @@ public:
     Object typeof();
     std::string contentof(std::string contentType);
 private:
-    CoreApi(corto_object handle) : m_handle(handle) {}
-    corto_object m_handle;
+    CoreApi(const corto_object handle) : m_handle(handle) {}
+    const corto_object m_handle;
 };
 
 // C++ base wrapper class
@@ -32,11 +32,12 @@ public:
     Object();
     Object(corto_object handle);
     Object(corto_object handle, void *ptr);
-    Object(Object& obj);
-    Object(Object&& obj);
+    Object(const Object& obj);
+    Object(const Object&& obj);
+    Object operator=(Object obj);
     ~Object();
 
-    CoreApi* corto;
+    CoreApi& corto;
 
 protected:
     corto_object handle();
@@ -67,9 +68,9 @@ public:
     corto_object createChild(corto::Object parent, std::string id, corto_type type, void *value);
     void update(void *value);
 protected:
-    Object_t(::corto::Object& _obj) : _obj(_obj) {}
+    Object_t(::corto::Object _obj) : _obj(_obj) {}
 private:
-    struct ::corto::Object& _obj;
+    ::corto::Object _obj;
 };
 
 }

@@ -27,7 +27,7 @@ char* _cpp_typeId(g_generator g, corto_type t, cpp_context context, cpp_refKind 
     corto_bool complex = FALSE;
 
     if (t->kind == CORTO_PRIMITIVE) {
-        c_primitiveId(corto_primitive(t), typeName);
+        c_primitiveId(g, corto_primitive(t), typeName);
     } else if ((t->kind == CORTO_VOID) && !t->reference) {
         strcpy(typeName, "void");
     } else {
