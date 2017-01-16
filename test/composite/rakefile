@@ -1,0 +1,7 @@
+
+PACKAGE = 'test'
+
+LOCAL = true
+LANGUAGE = 'c++'
+
+require "#{ENV['CORTO_BUILD']}/package"

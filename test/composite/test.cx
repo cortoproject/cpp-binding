@@ -1,0 +1,23 @@
+#package /test
+
+struct StructType::
+  x, y: int32
+  void add(StructType s)
+
+test/Suite Struct::
+  updated: bool
+  observer onUpdate: on_update
+  void tc_create()
+  void tc_createChild()
+  void tc_declare()
+  void tc_declareChild()
+  void tc_define()
+  void tc_value()
+  void tc_update()
+  void tc_method()
+  void tc_function()
+  void tc_member()
+
+struct StructInheritType: StructType::
+  z: int32
+  void add(StructInheritType s)

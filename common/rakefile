@@ -2,6 +2,6 @@
 PACKAGE = 'corto/gen/cpp/common'
 
 NOCORTO = true
-USE_PACKAGE= ["corto", "corto/gen/c/common"]
+USE_PACKAGE= ["corto", "corto/g", "corto/gen/c/common"]
 
 require "#{ENV['CORTO_BUILD']}/package"
