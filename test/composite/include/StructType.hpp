@@ -24,15 +24,15 @@ public:
         StructType s);
     
 protected:
-    StructType(types::StructType* handle, types::StructType* ptr);
-    StructType(types::StructType* handle);
+    StructType(types::StructType* ref, types::StructType* ptr);
+    StructType(types::StructType* ref);
 };
 
 // wrapper class for references
 class StructType_ref : public StructType
 {
 public:
-    StructType_ref(types::StructType* handle);
+    StructType_ref(types::StructType* ref);
 };
 
 // wrapper class for values on stack

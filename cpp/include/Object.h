@@ -18,8 +18,8 @@ public:
     Object parentof();
     Object typeof();
 private:
-    CoreApi(const corto_object handle) : m_handle(handle) {}
-    const corto_object m_handle;
+    CoreApi(const corto_object ref) : m_ref(ref) {}
+    const corto_object m_ref;
 };
 
 // C++ base wrapper class
@@ -29,8 +29,8 @@ public:
     friend class Object_fluentAPI;
 
     Object();
-    Object(corto_object handle);
-    Object(corto_object handle, void *ptr, corto_type type);
+    Object(corto_object ref);
+    Object(corto_object ref, void *ptr, corto_type type);
     Object(const Object& obj);
     Object(const Object&& obj);
     Object operator=(Object obj);
@@ -39,15 +39,15 @@ public:
     std::string contentof(std::string contentType);
 
     CoreApi& corto;
+    corto_object ref();
+    void* ptr();
 
 protected:
-    corto_object handle();
-    void handle(corto_object obj);
-    void* ptr();
+    void ref(corto_object obj);
     void ptr(void* ptr);
 
 private:
-    corto_object m_handle; // Reference to object (optional)
+    corto_object m_ref; // Reference to object (optional)
     void *m_ptr; // Pointer to value (for objects that live on the stack)
     corto_type m_type;
 };
@@ -63,11 +63,11 @@ public:
     void update(void *value);
     void fromcontent(std::string contentType, std::string content);
 protected:
-    Object_fluentAPI(corto_object handle, void *ptr) : m_handle(handle), m_ptr(ptr) { }
-    Object_fluentAPI(void *ptr) : m_handle(NULL), m_ptr(ptr) {}
+    Object_fluentAPI(corto_object ref, void *ptr) : m_ref(ref), m_ptr(ptr) { }
+    Object_fluentAPI(void *ptr) : m_ref(NULL), m_ptr(ptr) {}
     corto_type m_type;
-    corto_object m_handle; // Reference to object (optional)
-    void *m_ptr; // Pointer to value (can be same as object handle)
+    corto_object m_ref; // Reference to object (optional)
+    void *m_ptr; // Pointer to value (can be same as object ref)
 };
 
 // Helper base class for factories
@@ -76,7 +76,7 @@ class Object_fluent : protected Object_fluentAPI
 {
 public:
     Object_fluent(T& _this, void *ptr) : Object_fluentAPI(ptr), m_this(_this) { }
-    Object_fluent(T& _this, corto_object handle, void *ptr) : Object_fluentAPI(handle, ptr), m_this(_this) { }
+    Object_fluent(T& _this, corto_object ref, void *ptr) : Object_fluentAPI(ref, ptr), m_this(_this) { }
 
     T& fromcontent(std::string contentType, std::string content)
       {

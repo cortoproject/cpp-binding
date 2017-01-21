@@ -22,15 +22,15 @@ public:
         StructInheritType s);
     
 protected:
-    StructInheritType(types::StructInheritType* handle, types::StructInheritType* ptr);
-    StructInheritType(types::StructInheritType* handle);
+    StructInheritType(types::StructInheritType* ref, types::StructInheritType* ptr);
+    StructInheritType(types::StructInheritType* ref);
 };
 
 // wrapper class for references
 class StructInheritType_ref : public StructInheritType
 {
 public:
-    StructInheritType_ref(types::StructInheritType* handle);
+    StructInheritType_ref(types::StructInheritType* ref);
 };
 
 // wrapper class for values on stack

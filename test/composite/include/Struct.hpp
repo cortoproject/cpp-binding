@@ -34,15 +34,15 @@ public:
     void tc_value();
     
 protected:
-    Struct(types::Struct handle, types::Struct ptr);
-    Struct(types::Struct handle);
+    Struct(types::Struct ref, types::Struct ptr);
+    Struct(types::Struct ref);
 };
 
 // wrapper class for references
 class Struct_ref : public Struct
 {
 public:
-    Struct_ref(types::Struct handle);
+    Struct_ref(types::Struct ref);
 };
 
 // wrapper class for values on stack

@@ -1164,10 +1164,10 @@ int lang_load(void) {
         goto error;
     }
 
-    /* Declare ::corto::lang::event::handle() */
-    corto_lang_event_handle_o = corto_declareChild(corto_lang_event_o, "handle()", corto_lang_method_o);
+    /* Declare ::corto::lang::event::ref() */
+    corto_lang_event_handle_o = corto_declareChild(corto_lang_event_o, "ref()", corto_lang_method_o);
     if (!corto_lang_event_handle_o) {
-        corto_error("lang_load: failed to declare '::corto::lang::event::handle()' (%s)", corto_lasterr());
+        corto_error("lang_load: failed to declare '::corto::lang::event::ref()' (%s)", corto_lasterr());
         goto error;
     }
 
@@ -1682,10 +1682,10 @@ int lang_load(void) {
         goto error;
     }
 
-    /* Declare ::corto::lang::invokeEvent::handle() */
-    corto_lang_invokeEvent_handle_o = corto_declareChild(corto_lang_invokeEvent_o, "handle()", corto_lang_method_o);
+    /* Declare ::corto::lang::invokeEvent::ref() */
+    corto_lang_invokeEvent_handle_o = corto_declareChild(corto_lang_invokeEvent_o, "ref()", corto_lang_method_o);
     if (!corto_lang_invokeEvent_handle_o) {
-        corto_error("lang_load: failed to declare '::corto::lang::invokeEvent::handle()' (%s)", corto_lasterr());
+        corto_error("lang_load: failed to declare '::corto::lang::invokeEvent::ref()' (%s)", corto_lasterr());
         goto error;
     }
 
@@ -2039,10 +2039,10 @@ int lang_load(void) {
         goto error;
     }
 
-    /* Declare ::corto::lang::observableEvent::handle() */
-    corto_lang_observableEvent_handle_o = corto_declareChild(corto_lang_observableEvent_o, "handle()", corto_lang_method_o);
+    /* Declare ::corto::lang::observableEvent::ref() */
+    corto_lang_observableEvent_handle_o = corto_declareChild(corto_lang_observableEvent_o, "ref()", corto_lang_method_o);
     if (!corto_lang_observableEvent_handle_o) {
-        corto_error("lang_load: failed to declare '::corto::lang::observableEvent::handle()' (%s)", corto_lasterr());
+        corto_error("lang_load: failed to declare '::corto::lang::observableEvent::ref()' (%s)", corto_lasterr());
         goto error;
     }
 
@@ -4774,14 +4774,14 @@ int lang_load(void) {
         corto_error("lang_load: calculated size '%d' of type '::corto::lang::event' doesn't match C-type size '%d'", corto_type(corto_lang_event_o)->size, sizeof(struct corto_lang_event_s));
     }
 
-    /* Define ::corto::lang::event::handle() */
+    /* Define ::corto::lang::event::ref() */
     if (!corto_checkState(corto_lang_event_handle_o, CORTO_DEFINED)) {
         corto_lang_function(corto_lang_event_handle_o)->returnType = corto_resolve(NULL, "::corto::lang::void");
         corto_lang_function(corto_lang_event_handle_o)->returnsReference = FALSE;
         corto_lang_event_handle_o->_virtual = TRUE;
         
         if (corto_define(corto_lang_event_handle_o)) {
-            corto_error("lang_load: failed to define '::corto::lang::event::handle()' (%s)", corto_lasterr());
+            corto_error("lang_load: failed to define '::corto::lang::event::ref()' (%s)", corto_lasterr());
             goto error;
         }
     }
@@ -5758,14 +5758,14 @@ int lang_load(void) {
         }
     }
 
-    /* Define ::corto::lang::invokeEvent::handle() */
+    /* Define ::corto::lang::invokeEvent::ref() */
     if (!corto_checkState(corto_lang_invokeEvent_handle_o, CORTO_DEFINED)) {
         corto_lang_function(corto_lang_invokeEvent_handle_o)->returnType = corto_resolve(NULL, "::corto::lang::void");
         corto_lang_function(corto_lang_invokeEvent_handle_o)->returnsReference = FALSE;
         corto_lang_invokeEvent_handle_o->_virtual = TRUE;
         
         if (corto_define(corto_lang_invokeEvent_handle_o)) {
-            corto_error("lang_load: failed to define '::corto::lang::invokeEvent::handle()' (%s)", corto_lasterr());
+            corto_error("lang_load: failed to define '::corto::lang::invokeEvent::ref()' (%s)", corto_lasterr());
             goto error;
         }
     }
@@ -6441,14 +6441,14 @@ int lang_load(void) {
         corto_error("lang_load: calculated size '%d' of type '::corto::lang::observableEvent' doesn't match C-type size '%d'", corto_type(corto_lang_observableEvent_o)->size, sizeof(struct corto_lang_observableEvent_s));
     }
 
-    /* Define ::corto::lang::observableEvent::handle() */
+    /* Define ::corto::lang::observableEvent::ref() */
     if (!corto_checkState(corto_lang_observableEvent_handle_o, CORTO_DEFINED)) {
         corto_lang_function(corto_lang_observableEvent_handle_o)->returnType = corto_resolve(NULL, "::corto::lang::void");
         corto_lang_function(corto_lang_observableEvent_handle_o)->returnsReference = FALSE;
         corto_lang_observableEvent_handle_o->_virtual = TRUE;
         
         if (corto_define(corto_lang_observableEvent_handle_o)) {
-            corto_error("lang_load: failed to define '::corto::lang::observableEvent::handle()' (%s)", corto_lasterr());
+            corto_error("lang_load: failed to define '::corto::lang::observableEvent::ref()' (%s)", corto_lasterr());
             goto error;
         }
     }

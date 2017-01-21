@@ -5,15 +5,15 @@
 namespace corto {
 
 std::string CoreApi::idof() {
-    return std::string(corto_idof(m_handle));
+    return std::string(corto_idof(m_ref));
 }
 
 Object CoreApi::parentof() {
-    return Object(corto_parentof(m_handle));
+    return Object(corto_parentof(m_ref));
 }
 
 Object CoreApi::typeof() {
-    return Object(corto_typeof(m_handle));
+    return Object(corto_typeof(m_ref));
 }
 
 std::string Object::contentof(std::string contentType) {
@@ -27,73 +27,73 @@ std::string Object::contentof(std::string contentType) {
 Object::Object() :
   CoreApi(NULL),
   corto(*this),
-  m_handle(NULL),
+  m_ref(NULL),
   m_ptr(NULL),
   m_type(NULL)
 {
     corto_debug("cpp: %p: construct()\n", this);
 }
 
-Object::Object(corto_object handle) :
-  CoreApi(handle),
+Object::Object(corto_object ref) :
+  CoreApi(ref),
   corto(*this),
-  m_handle(NULL),
-  m_ptr(handle),
-  m_type(handle ? corto_typeof(handle) : NULL)
+  m_ref(NULL),
+  m_ptr(ref),
+  m_type(ref ? corto_typeof(ref) : NULL)
 {
-    corto_setref(&m_handle, handle);
-    corto_debug("cpp: %p: construct(handle = %p // %s)\n", this, handle, corto_fullpath(NULL, m_handle));
+    corto_setref(&m_ref, ref);
+    corto_debug("cpp: %p: construct(ref = %p // %s)\n", this, ref, corto_fullpath(NULL, m_ref));
 }
 
-Object::Object(corto_object handle, void *ptr, corto_type type) :
-  CoreApi(handle),
+Object::Object(corto_object ref, void *ptr, corto_type type) :
+  CoreApi(ref),
   corto(*this),
-  m_handle(NULL),
+  m_ref(NULL),
   m_ptr(ptr),
   m_type(type)
 {
-    corto_setref(&m_handle, handle);
-    corto_debug("cpp: %p: construct(handle = %p, ptr = %p)\n", this, handle, ptr);
+    corto_setref(&m_ref, ref);
+    corto_debug("cpp: %p: construct(ref = %p, ptr = %p)\n", this, ref, ptr);
 }
 
 Object::Object(const Object& obj) :
-  CoreApi(obj.m_handle), corto(*this),
-  m_handle(NULL),
+  CoreApi(obj.m_ref), corto(*this),
+  m_ref(NULL),
   m_ptr(obj.m_ptr),
-  m_type(obj.m_handle ? corto_typeof(obj.m_handle) : NULL)
+  m_type(obj.m_ref ? corto_typeof(obj.m_ref) : NULL)
 {
-    corto_setref(&m_handle, obj.m_handle);
-    corto_debug("cpp: %p: construct(Object& %p) => handle = %p // %s, ptr = %p\n", this, &obj, m_handle, corto_fullpath(NULL, m_handle), m_ptr);
+    corto_setref(&m_ref, obj.m_ref);
+    corto_debug("cpp: %p: construct(Object& %p) => ref = %p // %s, ptr = %p\n", this, &obj, m_ref, corto_fullpath(NULL, m_ref), m_ptr);
 }
 
 Object::Object(const Object&& obj) :
-  CoreApi(obj.m_handle),
+  CoreApi(obj.m_ref),
   corto(*this),
-  m_handle(NULL),
+  m_ref(NULL),
   m_ptr(obj.m_ptr),
-  m_type(obj.m_handle ? corto_typeof(obj.m_handle) : NULL)
+  m_type(obj.m_ref ? corto_typeof(obj.m_ref) : NULL)
 {
-    corto_setref(&m_handle, obj.m_handle);
-    corto_debug("cpp: %p: construct(Object&& %p) => handle = %p, ptr = %p\n", this, &obj, m_handle, m_ptr);
+    corto_setref(&m_ref, obj.m_ref);
+    corto_debug("cpp: %p: construct(Object&& %p) => ref = %p, ptr = %p\n", this, &obj, m_ref, m_ptr);
 }
 
 Object Object::operator=(Object obj) {
-    return Object(obj.m_handle, obj.m_ptr, obj.m_type);
+    return Object(obj.m_ref, obj.m_ptr, obj.m_type);
 }
 
 Object::~Object() {
-    corto_debug("cpp: %p: destruct() => handle = %p, ptr = %p\n", this, m_handle, m_ptr);
-    if (m_handle) {
-        corto_release(m_handle);
+    corto_debug("cpp: %p: destruct() => ref = %p, ptr = %p\n", this, m_ref, m_ptr);
+    if (m_ref) {
+        corto_release(m_ref);
     }
 }
 
-corto_object Object::handle() {
-    return m_handle;
+corto_object Object::ref() {
+    return m_ref;
 }
 
-void Object::handle(corto_object obj) {
-    corto_setref(&m_handle, obj);
+void Object::ref(corto_object obj) {
+    corto_setref(&m_ref, obj);
     this->ptr(obj);
 }
 
@@ -111,7 +111,7 @@ corto_object Object_fluentAPI::declare(corto_type type) {
         throw corto::exception(corto_lasterr());
     }
     this->m_ptr = result;
-    this->m_handle = result;
+    this->m_ref = result;
     return result;
 }
 
@@ -127,22 +127,22 @@ corto_object Object_fluentAPI::create(corto_type type, void *value) {
         throw corto::exception(corto_lasterr());
     }
     this->m_ptr = result;
-    this->m_handle = result;
+    this->m_ref = result;
     return result;
 }
 
 corto_object Object_fluentAPI::declareChild(corto::Object parent, std::string id, corto_type type) {
-    corto_object result = corto_declareChild(parent.handle(), (corto_string)id.c_str(), type);
+    corto_object result = corto_declareChild(parent.ref(), (corto_string)id.c_str(), type);
     if (!result) {
         throw corto::exception(corto_lasterr());
     }
     this->m_ptr = result;
-    this->m_handle = result;
+    this->m_ref = result;
     return result;
 }
 
 corto_object Object_fluentAPI::createChild(corto::Object parent, std::string id, corto_type type, void *value) {
-    corto_object result = corto_declareChild(parent.handle(), (corto_string)id.c_str(), type);
+    corto_object result = corto_declareChild(parent.ref(), (corto_string)id.c_str(), type);
     if (!result) {
         throw corto::exception(corto_lasterr());
     }
@@ -153,7 +153,7 @@ corto_object Object_fluentAPI::createChild(corto::Object parent, std::string id,
         throw corto::exception(corto_lasterr());
     }
     this->m_ptr = result;
-    this->m_handle = result;
+    this->m_ref = result;
     return result;
 }
 
@@ -167,17 +167,17 @@ void Object_fluentAPI::define(void *value) {
 }
 
 void Object_fluentAPI::update(void *value) {
-    if (!m_handle) {
+    if (!m_ref) {
         throw corto::exception("can't update, value is not an object");
     }
 
-    if (corto_updateBegin(m_handle)) {
+    if (corto_updateBegin(m_ref)) {
         throw corto::exception(corto_lasterr());
     }
-    if (corto_copyp(m_handle, corto_typeof(m_handle), value)) {
+    if (corto_copyp(m_ref, corto_typeof(m_ref), value)) {
         throw corto::exception(corto_lasterr());
     }
-    if (corto_updateEnd(m_handle)) {
+    if (corto_updateEnd(m_ref)) {
         throw corto::exception(corto_lasterr());
     }
 }
