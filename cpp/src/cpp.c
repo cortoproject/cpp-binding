@@ -1,5 +1,5 @@
 
-#include "corto/cpp/cpp.h"
+#include "corto/cpp/cpp.hpp"
 
 namespace corto {
 ::corto::Object root(::root_o);

@@ -9,7 +9,7 @@ static corto_int16 cpp_mainHeaderOpen(cpp_classWalk_t *data) {
         goto error;
     }
 
-    g_fileWrite(data->mainheader, "#include <corto/cpp/cpp.h>\n");
+    g_fileWrite(data->mainheader, "#include <corto/cpp/cpp.hpp>\n");
     g_fileWrite(data->mainheader, "\n");
 
     cpp_openScope(data->mainheader, g_getCurrent(data->g));
@@ -343,14 +343,6 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileDedent(data->hiddenImpl);
     g_fileWrite(data->hiddenImpl, "}\n");
 
-    g_fileWrite(data->header, "%s_t operator()();\n", id);
-    g_fileWrite(data->hiddenImpl, "%s_t %s::operator ()()\n", id, id);
-    g_fileWrite(data->hiddenImpl, "{\n");
-    g_fileIndent(data->hiddenImpl);
-    g_fileWrite(data->hiddenImpl, "return %s_t(*this);\n", id);
-    g_fileDedent(data->hiddenImpl);
-    g_fileWrite(data->hiddenImpl, "}\n");
-
     g_fileWrite(data->header, "\n");
 
     if (cpp_walkMembers(type, data)) {
@@ -368,9 +360,18 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileDedent(data->header);
     g_fileWrite(data->header, "protected:\n");
     g_fileIndent(data->header);
-    g_fileWrite(data->header, "%s(%s handle, %s ptr);\n", id, cId, cId);
-    g_fileWrite(data->hiddenImpl, "%s::%s(%s handle, %s ptr) : %s((%s)handle, (%s)ptr)\n",
+
+    g_fileWrite(data->header, "%s(%s handle, %s ptr, corto_type type);\n", id, cId, cId);
+    g_fileWrite(data->hiddenImpl, "%s::%s(%s handle, %s ptr, corto_type type) : %s((%s)handle, (%s)ptr, type)\n",
       id, id, cId, cId, baseId, baseCType, baseCType);
+    g_fileWrite(data->hiddenImpl, "{\n");
+    g_fileIndent(data->hiddenImpl);
+    g_fileDedent(data->hiddenImpl);
+    g_fileWrite(data->hiddenImpl, "}\n");
+
+    g_fileWrite(data->header, "%s(%s handle, %s ptr);\n", id, cId, cId);
+    g_fileWrite(data->hiddenImpl, "%s::%s(%s handle, %s ptr) : %s((%s)handle, (%s)ptr, (corto_type)%s)\n",
+      id, id, cId, cId, baseId, baseCType, baseCType, varId);
     g_fileWrite(data->hiddenImpl, "{\n");
     g_fileIndent(data->hiddenImpl);
     g_fileDedent(data->hiddenImpl);
@@ -395,7 +396,20 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileWrite(data->header, "public:\n");
     g_fileIndent(data->header);
     g_fileWrite(data->header, "%s_ref(%s handle);\n", id, cpp_typeId(data->g, type, Cpp_Parameter, Cpp_ByCRef, cId));
+
+    g_fileWrite(data->header, "%s_t operator()();\n", id);
+    g_fileWrite(data->hiddenImpl, "%s_t %s_ref::operator ()()\n", id, id);
+    g_fileWrite(data->hiddenImpl, "{\n");
+    g_fileIndent(data->hiddenImpl);
+    g_fileWrite(data->hiddenImpl, "return %s_t(*this, handle());\n", id);
+    g_fileDedent(data->hiddenImpl);
+    g_fileWrite(data->hiddenImpl, "}\n");
+
     g_fileDedent(data->header);
+    g_fileWrite(data->header, "};\n");
+    g_fileWrite(data->header, "\n");
+
+
     g_fileWrite(data->hiddenImpl, "%s_ref::%s_ref(%s handle) : %s((%s)handle)\n",
       id, id, cpp_typeId(data->g, type, Cpp_Parameter, Cpp_ByCRef, cId), id, cId);
     g_fileWrite(data->hiddenImpl, "{\n");
@@ -403,16 +417,19 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileDedent(data->hiddenImpl);
     g_fileWrite(data->hiddenImpl, "}\n");
 
-    g_fileIndent(data->header);
-    g_fileDedent(data->header);
-    g_fileWrite(data->header, "};\n");
-    g_fileWrite(data->header, "\n");
-
     g_fileWrite(data->header, "// wrapper class for values on stack\n", corto_fullpath(NULL, type));
     g_fileWrite(data->header, "class %s_val : public %s\n", id, id);
     g_fileWrite(data->header, "{\n");
     g_fileIndent(data->header);
     g_fileWrite(data->header, "friend class %s_t;\n", id);
+    g_fileWrite(data->header, "%s_t operator()();\n", id);
+    g_fileWrite(data->hiddenImpl, "%s_t %s_val::operator ()()\n", id, id);
+    g_fileWrite(data->hiddenImpl, "{\n");
+    g_fileIndent(data->hiddenImpl);
+    g_fileWrite(data->hiddenImpl, "return %s_t(*this);\n", id);
+    g_fileDedent(data->hiddenImpl);
+    g_fileWrite(data->hiddenImpl, "}\n");
+
     g_fileDedent(data->header);
     g_fileWrite(data->header, "private:\n");
     g_fileIndent(data->header);

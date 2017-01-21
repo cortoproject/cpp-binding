@@ -17,7 +17,6 @@ public:
     std::string idof();
     Object parentof();
     Object typeof();
-    std::string contentof(std::string contentType);
 private:
     CoreApi(const corto_object handle) : m_handle(handle) {}
     const corto_object m_handle;
@@ -31,11 +30,13 @@ public:
 
     Object();
     Object(corto_object handle);
-    Object(corto_object handle, void *ptr);
+    Object(corto_object handle, void *ptr, corto_type type);
     Object(const Object& obj);
     Object(const Object&& obj);
     Object operator=(Object obj);
     ~Object();
+
+    std::string contentof(std::string contentType);
 
     CoreApi& corto;
 
@@ -48,6 +49,7 @@ protected:
 private:
     corto_object m_handle; // Reference to object (optional)
     void *m_ptr; // Pointer to value (for objects that live on the stack)
+    corto_type m_type;
 };
 
 // C++ utility methods that wrap C functions and add exception handling
@@ -61,7 +63,8 @@ public:
     void update(void *value);
     void fromcontent(std::string contentType, std::string content);
 protected:
-    Object_fluentAPI(corto_object handle, void *ptr) : m_handle(handle), m_ptr(ptr) {}
+    Object_fluentAPI(corto_object handle, void *ptr) : m_handle(handle), m_ptr(ptr) { }
+    Object_fluentAPI(void *ptr) : m_handle(NULL), m_ptr(ptr) {}
     corto_type m_type;
     corto_object m_handle; // Reference to object (optional)
     void *m_ptr; // Pointer to value (can be same as object handle)
@@ -72,9 +75,14 @@ template <class T>
 class Object_fluent : protected Object_fluentAPI
 {
 public:
+    Object_fluent(T& _this, void *ptr) : Object_fluentAPI(ptr), m_this(_this) { }
     Object_fluent(T& _this, corto_object handle, void *ptr) : Object_fluentAPI(handle, ptr), m_this(_this) { }
+
     T& fromcontent(std::string contentType, std::string content)
-      { return ((Object_fluentAPI*)this)->fromcontent(contentType, content); }
+      {
+          ((Object_fluentAPI*)this)->fromcontent(contentType, content);
+          return m_this;
+      }
 protected:
     T& m_this; // The fluent factory instance (<type>_t)
 };

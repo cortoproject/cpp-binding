@@ -153,6 +153,7 @@ corto_int16 cpp_fluentTemplDecl(corto_type type, char *base, cpp_classWalk_t *da
     g_fileWrite(data->header, "public:\n");
     g_fileIndent(data->header);
     g_fileWrite(data->header, "%s_fluent(T& _this, void *ptr) : %s_fluent<T>(_this, ptr) { }\n", id, base);
+    g_fileWrite(data->header, "%s_fluent(T& _this, corto_object handle, void *ptr) : %s_fluent<T>(_this, handle, ptr) { }\n", id, base);
 
     if (corto_instanceof(corto_interface_o, type) && corto_interface(type)->base) {
         g_fileWrite(data->header, "%s_fluent<T> super() ", base);
@@ -192,13 +193,18 @@ corto_int16 cpp_fluentDecl(corto_type type, char *base, cpp_classWalk_t *data) {
 
     g_fileWrite(data->header, "%s_t();\n", id);
     g_fileWrite(data->hiddenImpl,
-      "%s_t::%s_t() : %s_fluent<%s_t>(*this, &m_value) { m_type = corto_type(%s); }\n",
-      corto_path(NULL, g_getCurrent(data->g), type, "::"), id, id, id, typeVarId);
+      "%s_t::%s_t() : %s_fluent<%s_t>(*this, &m_value) { m_type = corto_type(%s); memset(&m_value, 0, sizeof(m_value)); corto_initp(&m_value, %s);}\n",
+      corto_path(NULL, g_getCurrent(data->g), type, "::"), id, id, id, typeVarId, typeVarId);
 
     g_fileWrite(data->header, "%s_t(%s& obj);\n", id, id);
     g_fileWrite(data->hiddenImpl,
-      "%s_t::%s_t(%s& obj) : %s_fluent<%s_t>(*this, &m_value) { m_type = corto_type(%s); }\n",
-      corto_path(NULL, g_getCurrent(data->g), type, "::"), id, id, id, id, typeVarId);
+      "%s_t::%s_t(%s& obj) : %s_fluent<%s_t>(*this, &m_value) { m_type = corto_type(%s); memset(&m_value, 0, sizeof(m_value)); corto_initp(&m_value, %s);}\n",
+      corto_path(NULL, g_getCurrent(data->g), type, "::"), id, id, id, id, typeVarId, typeVarId);
+
+    g_fileWrite(data->header, "%s_t(%s& obj, corto_object handle);\n", id, id);
+    g_fileWrite(data->hiddenImpl,
+      "%s_t::%s_t(%s& obj, corto_object handle) : %s_fluent<%s_t>(*this, handle, &m_value) { m_type = corto_type(%s); memset(&m_value, 0, sizeof(m_value)); corto_initp(&m_value, %s);}\n",
+      corto_path(NULL, g_getCurrent(data->g), type, "::"), id, id, id, id, typeVarId, typeVarId);
 
     g_fileWrite(data->header, "\n");
 
