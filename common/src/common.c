@@ -24,21 +24,22 @@ static corto_bool cpp_cRequiresPtr(corto_type t, cpp_context context, corto_bool
 char* cpp_typeIdFromStr(g_generator g, char *typeName, cpp_context context, corto_id buffer) {
 
     switch(context) {
+    case Cpp_Member:
+    case Cpp_Parameter:
+    case Cpp_Return:
     case Cpp_Class:
-        sprintf(buffer, "%s", typeName);
+        sprintf(buffer, "C%s", typeName);
         break;
     case Cpp_ClassRef:
-        sprintf(buffer, "%s_ref", typeName);
+        sprintf(buffer, "%sRef", typeName);
         break;
     case Cpp_ClassVal:
-        sprintf(buffer, "%s_val", typeName);
+        sprintf(buffer, "%sVal", typeName);
         break;
     case Cpp_TemplateFactory:
-        sprintf(buffer, "%s_fluent", typeName);
+        sprintf(buffer, "T%s", typeName);
         break;
     case Cpp_ClassFactory:
-        sprintf(buffer, "%s_t", typeName);
-        break;
     default:
         strcpy(buffer, typeName);
         break;
@@ -72,7 +73,11 @@ char* cpp_typeIdIntern(g_generator g, corto_type t, cpp_context context, cpp_ref
             strcat(buffer, "*");
         }
     } else {
-        cpp_typeIdFromStr(g, typeName, context, buffer);
+        if (complex) {
+            cpp_typeIdFromStr(g, typeName, context, buffer);
+        } else {
+            strcpy(buffer, typeName);
+        }
     }
 
     return buffer;

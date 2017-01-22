@@ -46,10 +46,10 @@ private:
 
 // helper template with T = fluent method returntype to support inheritance
 template <class T>
-class StructType_fluent : public ::corto::Object_fluent<T>
+class StructType_fluent : public ::corto::TObject<T>
 {
 public:
-    StructType_fluent(T& _this, void *ptr) : ::corto::Object_fluent<T>(_this, ptr) { }
+    StructType_fluent(T& _this, void *ptr) : ::corto::TObject<T>(_this, ptr) { }
     T& x(int32_t value){ ((types::StructType*)this->m_ptr)->x = value; return this->m_this; }
     T& y(int32_t value){ ((types::StructType*)this->m_ptr)->y = value; return this->m_this; }
 };

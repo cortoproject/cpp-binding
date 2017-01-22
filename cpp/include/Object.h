@@ -72,11 +72,11 @@ protected:
 
 // Helper base class for factories
 template <class T>
-class Object_fluent : protected Object_fluentAPI
+class TObject : protected Object_fluentAPI
 {
 public:
-    Object_fluent(T& _this, void *ptr) : Object_fluentAPI(ptr), m_this(_this) { }
-    Object_fluent(T& _this, corto_object ref, void *ptr) : Object_fluentAPI(ref, ptr), m_this(_this) { }
+    TObject(T& _this, void *ptr) : Object_fluentAPI(ptr), m_this(_this) { }
+    TObject(T& _this, corto_object ref, void *ptr) : Object_fluentAPI(ref, ptr), m_this(_this) { }
 
     T& fromcontent(std::string contentType, std::string content)
       {

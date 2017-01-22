@@ -172,11 +172,17 @@ static corto_int16 cpp_fluent_update(corto_type type, cpp_classWalk_t *data) {
     return 0;
 }
 
-corto_int16 cpp_fluentTemplDecl(corto_type type, char *base, cpp_classWalk_t *data) {
+corto_int16 cpp_fluentTemplDecl(corto_type type, cpp_classWalk_t *data) {
     corto_id baseTemplateFactoryId, templateFactoryId;
+    corto_interface interface = corto_interface(type);
+
+    if (!interface->base) {
+        strcpy(baseTemplateFactoryId, "::corto::TObject");
+    } else {
+        cpp_typeFullId(data->g, interface->base, Cpp_TemplateFactory, Cpp_ById, baseTemplateFactoryId);
+    }
 
     cpp_typeId(data->g, type, Cpp_TemplateFactory, templateFactoryId);
-    cpp_typeIdFromStr(data->g, base, Cpp_TemplateFactory, baseTemplateFactoryId);
 
     g_fileWrite(data->header, "// helper template with T = fluent method returntype to support inheritance\n");
     g_fileWrite(data->header, "template <class T>\n");
@@ -205,7 +211,7 @@ error:
     return -1;
 }
 
-corto_int16 cpp_fluentDecl(corto_type type, char *base, cpp_classWalk_t *data) {
+corto_int16 cpp_fluentDecl(corto_type type, cpp_classWalk_t *data) {
     corto_id cId, var, class, classFactory, classFactoryId, templateFactory;
 
     cpp_typeId(data->g, type, Cpp_Class, class);
@@ -217,7 +223,7 @@ corto_int16 cpp_fluentDecl(corto_type type, char *base, cpp_classWalk_t *data) {
 
     g_fileWrite(data->header, "\n");
 
-    if (cpp_fluentTemplDecl(type, base, data)) {
+    if (cpp_fluentTemplDecl(type, data)) {
         goto error;
     }
 
