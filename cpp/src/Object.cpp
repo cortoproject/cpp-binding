@@ -105,7 +105,7 @@ void Object::ptr(void* ptr) {
     m_ptr = ptr;
 }
 
-corto_object Object_fluentAPI::declare(corto_type type) {
+corto_object TObjectAPI::declare(corto_type type) {
     corto_object result = corto_declare(type);
     if (!result) {
         throw corto::exception(corto_lasterr());
@@ -115,7 +115,7 @@ corto_object Object_fluentAPI::declare(corto_type type) {
     return result;
 }
 
-corto_object Object_fluentAPI::create(corto_type type, void *value) {
+corto_object TObjectAPI::create(corto_type type, void *value) {
     corto_object result = corto_declare(type);
     if (!result) {
         throw corto::exception(corto_lasterr());
@@ -131,7 +131,7 @@ corto_object Object_fluentAPI::create(corto_type type, void *value) {
     return result;
 }
 
-corto_object Object_fluentAPI::declareChild(corto::Object parent, std::string id, corto_type type) {
+corto_object TObjectAPI::declareChild(corto::Object parent, std::string id, corto_type type) {
     corto_object result = corto_declareChild(parent.ref(), (corto_string)id.c_str(), type);
     if (!result) {
         throw corto::exception(corto_lasterr());
@@ -141,7 +141,7 @@ corto_object Object_fluentAPI::declareChild(corto::Object parent, std::string id
     return result;
 }
 
-corto_object Object_fluentAPI::createChild(corto::Object parent, std::string id, corto_type type, void *value) {
+corto_object TObjectAPI::createChild(corto::Object parent, std::string id, corto_type type, void *value) {
     corto_object result = corto_declareChild(parent.ref(), (corto_string)id.c_str(), type);
     if (!result) {
         throw corto::exception(corto_lasterr());
@@ -157,7 +157,7 @@ corto_object Object_fluentAPI::createChild(corto::Object parent, std::string id,
     return result;
 }
 
-void Object_fluentAPI::define(void *value) {
+void TObjectAPI::define(void *value) {
     if (corto_copyp(m_ptr, corto_typeof(m_ptr), value)) {
         throw corto::exception(corto_lasterr());
     }
@@ -166,7 +166,7 @@ void Object_fluentAPI::define(void *value) {
     }
 }
 
-void Object_fluentAPI::update(void *value) {
+void TObjectAPI::update(void *value) {
     if (!m_ref) {
         throw corto::exception("can't update, value is not an object");
     }
@@ -182,7 +182,7 @@ void Object_fluentAPI::update(void *value) {
     }
 }
 
-void Object_fluentAPI::fromcontent(std::string contentType, std::string content) {
+void TObjectAPI::fromcontent(std::string contentType, std::string content) {
     corto_value v = corto_value_value(this->m_type, m_ptr);
     if (corto_value_fromcontent(&v, (corto_string)contentType.c_str(), (corto_string)content.c_str())) {
         throw corto::exception(corto_lasterr());

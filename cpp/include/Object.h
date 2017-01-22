@@ -26,7 +26,7 @@ private:
 class Object : public CoreApi
 {
 public:
-    friend class Object_fluentAPI;
+    friend class TObjectAPI;
 
     Object();
     Object(corto_object ref);
@@ -53,7 +53,7 @@ private:
 };
 
 // C++ utility methods that wrap C functions and add exception handling
-class Object_fluentAPI {
+class TObjectAPI {
 public:
     corto_object declare(corto_type type);
     corto_object create(corto_type type, void *value);
@@ -63,8 +63,8 @@ public:
     void update(void *value);
     void fromcontent(std::string contentType, std::string content);
 protected:
-    Object_fluentAPI(corto_object ref, void *ptr) : m_ref(ref), m_ptr(ptr) { }
-    Object_fluentAPI(void *ptr) : m_ref(NULL), m_ptr(ptr) {}
+    TObjectAPI(corto_object ref, void *ptr) : m_ref(ref), m_ptr(ptr) { }
+    TObjectAPI(void *ptr) : m_ref(NULL), m_ptr(ptr) {}
     corto_type m_type;
     corto_object m_ref; // Reference to object (optional)
     void *m_ptr; // Pointer to value (can be same as object ref)
@@ -72,15 +72,15 @@ protected:
 
 // Helper base class for factories
 template <class T>
-class TObject : protected Object_fluentAPI
+class TObject : protected TObjectAPI
 {
 public:
-    TObject(T& _this, void *ptr) : Object_fluentAPI(ptr), m_this(_this) { }
-    TObject(T& _this, corto_object ref, void *ptr) : Object_fluentAPI(ref, ptr), m_this(_this) { }
+    TObject(T& _this, void *ptr) : TObjectAPI(ptr), m_this(_this) { }
+    TObject(T& _this, corto_object ref, void *ptr) : TObjectAPI(ref, ptr), m_this(_this) { }
 
     T& fromcontent(std::string contentType, std::string content)
       {
-          ((Object_fluentAPI*)this)->fromcontent(contentType, content);
+          ((TObjectAPI*)this)->fromcontent(contentType, content);
           return m_this;
       }
 protected:

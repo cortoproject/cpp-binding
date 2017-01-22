@@ -52,7 +52,7 @@ static corto_int16 cpp_fluent_create(corto_type type, cpp_classWalk_t *data) {
       classFactoryId);
 
     g_fileWrite(data->hiddenImpl,
-      "    { return %s((%s)((corto::Object_fluentAPI*)this)->create((corto_type)%s, &this->m_value)); }\n",
+      "    { return %s((%s)((corto::TObjectAPI*)this)->create((corto_type)%s, &this->m_value)); }\n",
       classRefId, returnCRef, var);
 
     return 0;
@@ -74,7 +74,7 @@ static corto_int16 cpp_fluent_declare(corto_type type, cpp_classWalk_t *data) {
       classFactoryId);
 
     g_fileWrite(data->hiddenImpl,
-      "    { return %s((%s)((corto::Object_fluentAPI*)this)->declare((corto_type)%s)); }\n",
+      "    { return %s((%s)((corto::TObjectAPI*)this)->declare((corto_type)%s)); }\n",
       classRefId, returnCRef, var);
 
     return 0;
@@ -91,7 +91,7 @@ static corto_int16 cpp_fluent_define(corto_type type, cpp_classWalk_t *data) {
       "void %s::define()\n", classFactoryId);
 
     g_fileWrite(data->hiddenImpl,
-      "    { ((corto::Object_fluentAPI*)this)->define(&this->m_value); }\n");
+      "    { ((corto::TObjectAPI*)this)->define(&this->m_value); }\n");
 
     return 0;
 }
@@ -112,7 +112,7 @@ static corto_int16 cpp_fluent_createChild(corto_type type, cpp_classWalk_t *data
       classFactoryId);
 
     g_fileWrite(data->hiddenImpl,
-      "    { return %s((%s)((corto::Object_fluentAPI*)this)->createChild(parent, id, (corto_type)%s, &this->m_value)); }\n",
+      "    { return %s((%s)((corto::TObjectAPI*)this)->createChild(parent, id, (corto_type)%s, &this->m_value)); }\n",
       classRefId, returnCRef, var);
 
     return 0;
@@ -138,7 +138,7 @@ static corto_int16 cpp_fluent_declareChild(corto_type type, cpp_classWalk_t *dat
       classFactoryId);
 
     g_fileWrite(data->hiddenImpl,
-      "    { return %s((%s)((corto::Object_fluentAPI*)this)->declareChild(parent, id, (corto_type)%s)); }\n",
+      "    { return %s((%s)((corto::TObjectAPI*)this)->declareChild(parent, id, (corto_type)%s)); }\n",
       classRefId, returnCRef, var);
 
     return 0;
@@ -167,7 +167,7 @@ static corto_int16 cpp_fluent_update(corto_type type, cpp_classWalk_t *data) {
     g_fileWrite(data->header, "void update();\n");
     g_fileWrite(data->hiddenImpl, "void %s::update()\n", classFactoryId);
     g_fileWrite(data->hiddenImpl,
-      "    { ((corto::Object_fluentAPI*)this)->update(&this->m_value); }\n");
+      "    { ((corto::TObjectAPI*)this)->update(&this->m_value); }\n");
 
     return 0;
 }
