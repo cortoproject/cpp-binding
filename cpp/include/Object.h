@@ -8,7 +8,6 @@
 namespace corto {
 
 class Object;
-class Object_t;
 
 class CoreApi
 {
@@ -17,9 +16,11 @@ public:
     std::string idof();
     Object parentof();
     Object typeof();
+    std::string contentof(std::string contentType);
+
 private:
-    CoreApi(const corto_object ref) : m_ref(ref) {}
-    const corto_object m_ref;
+    CoreApi(Object& obj) : m_obj(obj) {}
+    Object &m_obj;
 };
 
 // C++ base wrapper class
@@ -36,11 +37,15 @@ public:
     Object operator=(Object obj);
     ~Object();
 
-    std::string contentof(std::string contentType);
-
+    // Put all core functions under a public member 'corto' so they can be
+    // referred to as obj.corto.idof (example). This way, calling core functions
+    // is more explicit, and prevents clashes between core functions and methods.
     CoreApi& corto;
+
+    // Access C value of object by reference or pointer
     corto_object ref();
     void* ptr();
+    corto_type type();
 
 protected:
     void ref(corto_object obj);

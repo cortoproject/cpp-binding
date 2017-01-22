@@ -5,19 +5,19 @@
 namespace corto {
 
 std::string CoreApi::idof() {
-    return std::string(corto_idof(m_ref));
+    return std::string(corto_idof(m_obj.ref()));
 }
 
 Object CoreApi::parentof() {
-    return Object(corto_parentof(m_ref));
+    return Object(corto_parentof(m_obj.ref()));
 }
 
 Object CoreApi::typeof() {
-    return Object(corto_typeof(m_ref));
+    return Object(corto_typeof(m_obj.ref()));
 }
 
-std::string Object::contentof(std::string contentType) {
-    corto_value v = corto_value_value(m_type, m_ptr);
+std::string CoreApi::contentof(std::string contentType) {
+    corto_value v = corto_value_value(m_obj.type(), m_obj.ptr());
     corto_string s = corto_value_contentof(&v, (corto_string)contentType.c_str());
     std::string result = std::string(s);
     corto_dealloc(s);
@@ -25,7 +25,7 @@ std::string Object::contentof(std::string contentType) {
 }
 
 Object::Object() :
-  CoreApi(NULL),
+  CoreApi(*this),
   corto(*this),
   m_ref(NULL),
   m_ptr(NULL),
@@ -35,7 +35,7 @@ Object::Object() :
 }
 
 Object::Object(corto_object ref) :
-  CoreApi(ref),
+  CoreApi(*this),
   corto(*this),
   m_ref(NULL),
   m_ptr(ref),
@@ -46,7 +46,7 @@ Object::Object(corto_object ref) :
 }
 
 Object::Object(corto_object ref, void *ptr, corto_type type) :
-  CoreApi(ref),
+  CoreApi(*this),
   corto(*this),
   m_ref(NULL),
   m_ptr(ptr),
@@ -57,7 +57,8 @@ Object::Object(corto_object ref, void *ptr, corto_type type) :
 }
 
 Object::Object(const Object& obj) :
-  CoreApi(obj.m_ref), corto(*this),
+  CoreApi(*this),
+  corto(*this),
   m_ref(NULL),
   m_ptr(obj.m_ptr),
   m_type(obj.m_ref ? corto_typeof(obj.m_ref) : NULL)
@@ -67,7 +68,7 @@ Object::Object(const Object& obj) :
 }
 
 Object::Object(const Object&& obj) :
-  CoreApi(obj.m_ref),
+  CoreApi(*this),
   corto(*this),
   m_ref(NULL),
   m_ptr(obj.m_ptr),
@@ -88,6 +89,10 @@ Object::~Object() {
     }
 }
 
+corto_type Object::type() {
+    return m_type;
+}
+
 corto_object Object::ref() {
     return m_ref;
 }
@@ -104,6 +109,7 @@ void* Object::ptr() {
 void Object::ptr(void* ptr) {
     m_ptr = ptr;
 }
+
 
 corto_object TObjectAPI::declare(corto_type type) {
     corto_object result = corto_declare(type);
