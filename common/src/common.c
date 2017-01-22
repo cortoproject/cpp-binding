@@ -21,7 +21,34 @@ static corto_bool cpp_cRequiresPtr(corto_type t, cpp_context context, corto_bool
     return FALSE;
 }
 
-char* _cpp_typeId(g_generator g, corto_type t, cpp_context context, cpp_refKind refKind, corto_id buffer)
+char* cpp_typeIdFromStr(g_generator g, char *typeName, cpp_context context, corto_id buffer) {
+
+    switch(context) {
+    case Cpp_Class:
+        sprintf(buffer, "%s", typeName);
+        break;
+    case Cpp_ClassRef:
+        sprintf(buffer, "%s_ref", typeName);
+        break;
+    case Cpp_ClassVal:
+        sprintf(buffer, "%s_val", typeName);
+        break;
+    case Cpp_TemplateFactory:
+        sprintf(buffer, "%s_fluent", typeName);
+        break;
+    case Cpp_ClassFactory:
+        sprintf(buffer, "%s_t", typeName);
+        break;
+    default:
+        strcpy(buffer, typeName);
+        break;
+    }
+
+    return buffer;
+}
+
+
+char* cpp_typeIdIntern(g_generator g, corto_type t, cpp_context context, cpp_refKind refKind, corto_bool fullpath, corto_id buffer)
 {
     corto_id typeName;
     corto_bool complex = FALSE;
@@ -31,7 +58,11 @@ char* _cpp_typeId(g_generator g, corto_type t, cpp_context context, cpp_refKind 
     } else if ((t->kind == CORTO_VOID) && !t->reference) {
         strcpy(typeName, "void");
     } else {
-        corto_path(typeName, g_getCurrent(g), t, "::");
+        if (fullpath) {
+            corto_path(typeName, g_getCurrent(g), t, "::");
+        } else {
+            strcpy(typeName, corto_idof(t));
+        }
         complex = TRUE;
     }
 
@@ -41,10 +72,21 @@ char* _cpp_typeId(g_generator g, corto_type t, cpp_context context, cpp_refKind 
             strcat(buffer, "*");
         }
     } else {
-        strcpy(buffer, typeName);
+        cpp_typeIdFromStr(g, typeName, context, buffer);
     }
 
     return buffer;
+
+}
+
+char* _cpp_typeId(g_generator g, corto_type t, cpp_context context, corto_id buffer)
+{
+    return cpp_typeIdIntern(g, t, context, Cpp_ById, FALSE, buffer);
+}
+
+char* _cpp_typeFullId(g_generator g, corto_type t, cpp_context context, cpp_refKind refKind, corto_id buffer)
+{
+    return cpp_typeIdIntern(g, t, context, refKind, TRUE, buffer);
 }
 
 char* cpp_varId(g_generator g, corto_object o, corto_id buffer) {

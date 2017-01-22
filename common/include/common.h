@@ -14,16 +14,24 @@ typedef enum cpp_context {
     Cpp_Member,
     Cpp_Parameter,
     Cpp_Return,
+    Cpp_Class,
+    Cpp_ClassRef,
+    Cpp_ClassVal,
+    Cpp_ClassFactory,
+    Cpp_TemplateFactory,
 } cpp_context;
 
 typedef enum cpp_refKind {
     Cpp_ByVal,
     Cpp_ByCVal,
     Cpp_ByRef,
-    Cpp_ByCRef
+    Cpp_ByCRef,
+    Cpp_ById
 } cpp_refKind;
 
-char* _cpp_typeId(g_generator g, corto_type t, cpp_context context, cpp_refKind refKind, corto_id buffer);
+char* _cpp_typeId(g_generator g, corto_type t, cpp_context context, corto_id buffer);
+char* _cpp_typeFullId(g_generator g, corto_type t, cpp_context context, cpp_refKind refKind, corto_id buffer);
+char* cpp_typeIdFromStr(g_generator g, char *str, cpp_context context, corto_id buffer);
 char* cpp_varId(g_generator g, corto_object o, corto_id buffer);
 
 char* cpp_mainheader(g_generator g, corto_id header);
@@ -41,7 +49,8 @@ void cpp_closeScope(g_file file);
 
 char *cpp_cprefix(void);
 
-#define cpp_typeId(g, t, context, refKind, buffer) _cpp_typeId(g, corto_type(t), context, refKind, buffer)
+#define cpp_typeId(g, t, context, buffer) _cpp_typeId(g, corto_type(t), context, buffer)
+#define cpp_typeFullId(g, t, context, refKind, buffer) _cpp_typeFullId(g, corto_type(t), context, refKind, buffer)
 
 #ifdef __cplusplus
 }
