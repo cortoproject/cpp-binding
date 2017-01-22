@@ -2,7 +2,7 @@
 #ifndef TEST_HPP
 #define TEST_HPP
 
-#include <corto/cpp/cpp.h>
+#include <corto/cpp/cpp.hpp>
 
 namespace test {
 

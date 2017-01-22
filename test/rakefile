@@ -1,5 +1,5 @@
 
 COMPONENTS = [] <<
-    :composite
+    "composite"
 
 require "#{ENV['CORTO_BUILD']}/forward"

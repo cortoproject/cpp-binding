@@ -10,7 +10,8 @@
 #include <_project.h>
 #include <_type.h>
 
-#include <corto/test/test.h>
+#include <corto/test/test.hpp>
+#include <corto/cpp/cpp.hpp>
 /* $header() */
 /* You can put your own definitions here! */
 /* $end */

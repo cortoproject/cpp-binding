@@ -6,22 +6,21 @@
 
 namespace test {
 
-class Struct_t;
+class Struct;
 
 // wrapper class for /test/Struct
-class Struct : public corto::test::SuiteData
+class CStruct : public Ccorto::test::SuiteData
 {
 public:
-    Struct();
-    Struct_t operator()();
+    CStruct();
     
-    bool updated();
-    void updated(bool value);
+    char updated();
+    void updated(char value);
     
     void onUpdate(
-         event,
-        corto::lang::object object,
-        corto::core::observer observer);
+         event,
+        Ccorto::lang::object object,
+        Ccorto::core::observer observer);
     void tc_create();
     void tc_createChild();
     void tc_declare();
@@ -34,50 +33,56 @@ public:
     void tc_value();
     
 protected:
-    Struct(types::Struct ref, types::Struct ptr);
-    Struct(types::Struct ref);
+    CStruct(types::Struct ref, types::Struct ptr, corto_type type);
+    CStruct(types::Struct ref, types::Struct ptr);
+    CStruct(types::Struct ref);
 };
 
 // wrapper class for references
-class Struct_ref : public Struct
+class StructRef : public CStruct
 {
 public:
-    Struct_ref(types::Struct ref);
+    StructRef(types::Struct ref);
+    Struct operator()();
 };
 
 // wrapper class for values on stack
-class Struct_val : public Struct
+class StructVal : public CStruct
 {
-    friend class Struct_t;
+public:
+    friend class CStruct;
+    Struct operator()();
+    StructVal(types::Struct value);
 private:
-    Struct_val(types::Struct value);
     types::Struct m_value;
 };
 
 // helper template with T = fluent method returntype to support inheritance
 template <class T>
-class Struct_fluent : public corto::test::SuiteData_fluent<T>
+class TStruct : public Tcorto::test::SuiteData<T>
 {
 public:
-    Struct_fluent(T& _this, void *ptr) : corto::test::SuiteData_fluent<T>(_this, ptr) { }
-    corto::test::SuiteData_fluent<T> super() { return corto::test::SuiteData_fluent<T>(this->m_this, this->ptr); }
-    T& updated(bool value){ ((types::Struct)this->m_ptr)->updated = value; return this->m_this; }
+    TStruct(T& _this, void *ptr) : Tcorto::test::SuiteData<T>(_this, ptr) { }
+    TStruct(T& _this, corto_object ref, void *ptr) : Tcorto::test::SuiteData<T>(_this, ref, ptr) { }
+    Tcorto::test::SuiteData<T> super() { return Tcorto::test::SuiteData<T>(this->m_this, this->ptr); }
+    T& updated(char value){ ((types::Struct)this->m_ptr)->updated = value; return this->m_this; }
 };
 
-// fluent factory for Struct
-class Struct_t : public Struct_fluent<Struct_t>, corto::Object_t
+// fluent factory for /test/Struct
+class Struct : public TStruct<Struct>
 {
 public:
-    Struct_t();
-    Struct_t(Struct& obj);
+    Struct();
+    Struct(CStruct& obj);
+    Struct(CStruct& obj, corto_object ref);
     
-    Struct_ref declare();
-    Struct_ref create();
-    Struct_ref declareChild(corto::Object parent, std::string id);
-    Struct_ref createChild(corto::Object parent, std::string id);
+    StructRef declare();
+    StructRef create();
+    StructRef declareChild(corto::Object parent, std::string id);
+    StructRef createChild(corto::Object parent, std::string id);
     void define();
     void update();
-    Struct_val value();
+    StructVal value();
 private:
     struct types::Struct m_value;
 };

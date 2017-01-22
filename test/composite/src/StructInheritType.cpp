@@ -3,8 +3,8 @@
 
 namespace test {
 
-void StructInheritType::add(
-    StructInheritType s)
+void CStructInheritType::add(
+    CStructInheritType s)
 {
 /* $begin(add) */
 

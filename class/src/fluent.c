@@ -173,7 +173,7 @@ static corto_int16 cpp_fluent_update(corto_type type, cpp_classWalk_t *data) {
 }
 
 corto_int16 cpp_fluentTemplDecl(corto_type type, cpp_classWalk_t *data) {
-    corto_id baseTemplateFactoryId, templateFactoryId;
+    corto_id baseTemplateFactoryId, templateFactoryId, classFactory;
     corto_interface interface = corto_interface(type);
 
     if (!interface->base) {
@@ -183,8 +183,10 @@ corto_int16 cpp_fluentTemplDecl(corto_type type, cpp_classWalk_t *data) {
     }
 
     cpp_typeId(data->g, type, Cpp_TemplateFactory, templateFactoryId);
+    cpp_typeId(data->g, type, Cpp_ClassFactory, classFactory);
 
-    g_fileWrite(data->header, "// helper template with T = fluent method returntype to support inheritance\n");
+    g_fileWrite(data->header, "// Template with fluent methods returning T=%s for corto type %s\n", classFactory, corto_fullpath(NULL, type));
+    g_fileWrite(data->header, "// By parameterizing T, fluent subclasses can reuse this code.\n");
     g_fileWrite(data->header, "template <class T>\n");
     g_fileWrite(data->header, "class %s : public %s<T>\n", templateFactoryId, baseTemplateFactoryId);
     g_fileWrite(data->header, "{\n");
@@ -227,7 +229,7 @@ corto_int16 cpp_fluentDecl(corto_type type, cpp_classWalk_t *data) {
         goto error;
     }
 
-    g_fileWrite(data->header, "// fluent factory for %s\n", corto_fullpath(NULL, type));
+    g_fileWrite(data->header, "// Fluent factory class for corto type %s\n", corto_fullpath(NULL, type));
     g_fileWrite(data->header, "class %s : public %s<%s>\n",
       classFactory, templateFactory, classFactory);
     g_fileWrite(data->header, "{\n");

@@ -342,7 +342,7 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileWrite(data->header, "class %s;\n", classFactory);
     g_fileWrite(data->header, "\n");
 
-    g_fileWrite(data->header, "// wrapper class for %s\n", corto_fullpath(NULL, type));
+    g_fileWrite(data->header, "// Implementation of corto type %s\n", corto_fullpath(NULL, type));
     g_fileWrite(data->header, "class %s : public %s\n", class, baseClass);
     g_fileWrite(data->header, "{\n");
     g_fileWrite(data->header, "public:\n");
@@ -358,12 +358,14 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
 
     g_fileWrite(data->header, "\n");
 
+    g_fileWrite(data->header, "// Getters/setters\n");
     if (cpp_walkMembers(type, data)) {
         goto error;
     }
 
     g_fileWrite(data->header, "\n");
 
+    g_fileWrite(data->header, "// Methods\n");
     if (cpp_walkProcedures(type, data)) {
         goto error;
     }
@@ -374,6 +376,7 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileWrite(data->header, "protected:\n");
     g_fileIndent(data->header);
 
+    g_fileWrite(data->header, "// Protected constructors\n");
     g_fileWrite(data->header, "%s(%s ref, %s ptr, corto_type type);\n", class, cId, cId);
     g_fileWrite(data->hiddenImpl, "%s::%s(%s ref, %s ptr, corto_type type) : %s((%s)ref, (%s)ptr, type)\n",
       class, class, cId, cId, baseClass, baseCType, baseCType);
@@ -403,7 +406,7 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileWrite(data->header, "};\n");
     g_fileWrite(data->header, "\n");
 
-    g_fileWrite(data->header, "// wrapper class for references\n", corto_fullpath(NULL, type));
+    g_fileWrite(data->header, "// Reference of corto type %s\n", corto_fullpath(NULL, type));
     g_fileWrite(data->header, "class %s : public %s\n", classRef, class);
     g_fileWrite(data->header, "{\n");
     g_fileWrite(data->header, "public:\n");
@@ -429,7 +432,7 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileWrite(data->header, "};\n");
     g_fileWrite(data->header, "\n");
 
-    g_fileWrite(data->header, "// wrapper class for values on stack\n", corto_fullpath(NULL, type));
+    g_fileWrite(data->header, "// Value (on stack) of corto type %s\n", corto_fullpath(NULL, type));
     g_fileWrite(data->header, "class %s : public %s\n", classVal, class);
     g_fileWrite(data->header, "{\n");
     g_fileWrite(data->header, "public:\n");

@@ -3,10 +3,10 @@
 
 namespace test {
 
-void Struct::onUpdate(
-    ˇˇˇˇˇˇˇˇ event,
-    corto::lang::object object,
-    corto::core::observer observer)
+void CStruct::onUpdate(
+    ê∫• event,
+    Ccorto::lang::object object,
+    Ccorto::core::observer observer)
 {
 /* $begin(onUpdate) */
 
@@ -14,7 +14,7 @@ void Struct::onUpdate(
 
 /* $end */
 }
-void Struct::tc_create()
+void CStruct::tc_create()
 {
 /* $begin(tc_create) */
 
@@ -22,7 +22,7 @@ void Struct::tc_create()
 
 /* $end */
 }
-void Struct::tc_createChild()
+void CStruct::tc_createChild()
 {
 /* $begin(tc_createChild) */
 
@@ -30,7 +30,7 @@ void Struct::tc_createChild()
 
 /* $end */
 }
-void Struct::tc_declare()
+void CStruct::tc_declare()
 {
 /* $begin(tc_declare) */
 
@@ -38,7 +38,7 @@ void Struct::tc_declare()
 
 /* $end */
 }
-void Struct::tc_declareChild()
+void CStruct::tc_declareChild()
 {
 /* $begin(tc_declareChild) */
 
@@ -46,7 +46,7 @@ void Struct::tc_declareChild()
 
 /* $end */
 }
-void Struct::tc_define()
+void CStruct::tc_define()
 {
 /* $begin(tc_define) */
 
@@ -54,7 +54,7 @@ void Struct::tc_define()
 
 /* $end */
 }
-void Struct::tc_function()
+void CStruct::tc_function()
 {
 /* $begin(tc_function) */
 
@@ -62,7 +62,7 @@ void Struct::tc_function()
 
 /* $end */
 }
-void Struct::tc_member()
+void CStruct::tc_member()
 {
 /* $begin(tc_member) */
 
@@ -70,7 +70,7 @@ void Struct::tc_member()
 
 /* $end */
 }
-void Struct::tc_method()
+void CStruct::tc_method()
 {
 /* $begin(tc_method) */
 
@@ -78,7 +78,7 @@ void Struct::tc_method()
 
 /* $end */
 }
-void Struct::tc_update()
+void CStruct::tc_update()
 {
 /* $begin(tc_update) */
 
@@ -86,7 +86,7 @@ void Struct::tc_update()
 
 /* $end */
 }
-void Struct::tc_value()
+void CStruct::tc_value()
 {
 /* $begin(tc_value) */
 

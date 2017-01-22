@@ -6,14 +6,13 @@
 
 namespace test {
 
-class StructType_t;
+class StructType;
 
 // wrapper class for /test/StructType
-class StructType : public ::corto::Object
+class CStructType : public ::corto::Object
 {
 public:
-    StructType();
-    StructType_t operator()();
+    CStructType();
     
     int32_t x();
     void x(int32_t value);
@@ -21,53 +20,59 @@ public:
     void y(int32_t value);
     
     void add(
-        StructType s);
+        CStructType s);
     
 protected:
-    StructType(types::StructType* ref, types::StructType* ptr);
-    StructType(types::StructType* ref);
+    CStructType(types::StructType* ref, types::StructType* ptr, corto_type type);
+    CStructType(types::StructType* ref, types::StructType* ptr);
+    CStructType(types::StructType* ref);
 };
 
 // wrapper class for references
-class StructType_ref : public StructType
+class StructTypeRef : public CStructType
 {
 public:
-    StructType_ref(types::StructType* ref);
+    StructTypeRef(types::StructType* ref);
+    StructType operator()();
 };
 
 // wrapper class for values on stack
-class StructType_val : public StructType
+class StructTypeVal : public CStructType
 {
-    friend class StructType_t;
+public:
+    friend class CStructType;
+    StructType operator()();
+    StructTypeVal(types::StructType* value);
 private:
-    StructType_val(types::StructType* value);
     types::StructType m_value;
 };
 
 // helper template with T = fluent method returntype to support inheritance
 template <class T>
-class StructType_fluent : public ::corto::TObject<T>
+class TStructType : public ::corto::TObject<T>
 {
 public:
-    StructType_fluent(T& _this, void *ptr) : ::corto::TObject<T>(_this, ptr) { }
+    TStructType(T& _this, void *ptr) : ::corto::TObject<T>(_this, ptr) { }
+    TStructType(T& _this, corto_object ref, void *ptr) : ::corto::TObject<T>(_this, ref, ptr) { }
     T& x(int32_t value){ ((types::StructType*)this->m_ptr)->x = value; return this->m_this; }
     T& y(int32_t value){ ((types::StructType*)this->m_ptr)->y = value; return this->m_this; }
 };
 
-// fluent factory for StructType
-class StructType_t : public StructType_fluent<StructType_t>, corto::Object_t
+// fluent factory for /test/StructType
+class StructType : public TStructType<StructType>
 {
 public:
-    StructType_t();
-    StructType_t(StructType& obj);
+    StructType();
+    StructType(CStructType& obj);
+    StructType(CStructType& obj, corto_object ref);
     
-    StructType_ref declare();
-    StructType_ref create();
-    StructType_ref declareChild(corto::Object parent, std::string id);
-    StructType_ref createChild(corto::Object parent, std::string id);
+    StructTypeRef declare();
+    StructTypeRef create();
+    StructTypeRef declareChild(corto::Object parent, std::string id);
+    StructTypeRef createChild(corto::Object parent, std::string id);
     void define();
     void update();
-    StructType_val value();
+    StructTypeVal value();
 private:
     struct types::StructType m_value;
 };

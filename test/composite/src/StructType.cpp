@@ -3,8 +3,8 @@
 
 namespace test {
 
-void StructType::add(
-    StructType s)
+void CStructType::add(
+    CStructType s)
 {
 /* $begin(add) */
 

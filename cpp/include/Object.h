@@ -38,13 +38,15 @@ public:
     ~Object();
 
     // Put all core functions under a public member 'corto' so they can be
-    // referred to as obj.corto.idof (example). This way, calling core functions
-    // is more explicit, and prevents clashes between core functions and methods.
+    // referred to as obj.corto.idof() (example), which is more readable than
+    // calling it directly (without .corto), which could cause name-clashes.
     CoreApi& corto;
 
     // Access C value of object by reference or pointer
     corto_object ref();
     void* ptr();
+
+    // Access C reference to corto type
     corto_type type();
 
 protected:
@@ -54,7 +56,7 @@ protected:
 private:
     corto_object m_ref; // Reference to object (optional)
     void *m_ptr; // Pointer to value (for objects that live on the stack)
-    corto_type m_type;
+    corto_type m_type; // Type of pointer
 };
 
 // C++ utility methods that wrap C functions and add exception handling
@@ -70,9 +72,10 @@ public:
 protected:
     TObjectAPI(corto_object ref, void *ptr) : m_ref(ref), m_ptr(ptr) { }
     TObjectAPI(void *ptr) : m_ref(NULL), m_ptr(ptr) {}
-    corto_type m_type;
+
     corto_object m_ref; // Reference to object (optional)
     void *m_ptr; // Pointer to value (can be same as object ref)
+    corto_type m_type; // Type of pointer
 };
 
 // Helper base class for factories
@@ -89,7 +92,7 @@ public:
           return m_this;
       }
 protected:
-    T& m_this; // The fluent factory instance (<type>_t)
+    T& m_this; // The fluent factory instance
 };
 
 }
