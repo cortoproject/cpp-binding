@@ -1,0 +1,13 @@
+#package /Test
+
+struct Point::
+  x, y: int32
+  void add(Point p)
+
+struct Point3D: Point::
+  z: int32
+  void add(Point3D p)
+
+struct Point4D: Point3D::
+  w: int32
+  void add(Point4D p)

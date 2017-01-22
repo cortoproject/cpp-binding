@@ -1,0 +1,6 @@
+
+TARGET = 'CppApp'
+
+LANGUAGE = "c++"
+
+require "#{ENV['CORTO_BUILD']}/application"

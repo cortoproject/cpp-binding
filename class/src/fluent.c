@@ -3,6 +3,7 @@
 #include "corto/gen/cpp/common/common.h"
 #include "corto/gen/cpp/class/class.h"
 
+/* Add a fluent method (setter) for each member in the corto type */
 static corto_int16 cpp_fluent_visitMember(corto_serializer s, corto_value *info, void *userData) {
     cpp_classWalk_t *data = userData;
     corto_type t = corto_value_getType(info);

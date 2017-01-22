@@ -97,10 +97,11 @@ error:
     return -1;
 }
 
-/* Generate stubs for method */
+/* Generate proxy method that wraps C++ method in C, so it can be associated
+ * with a corto function object. */
 static corto_int16 cpp_methodProxy(corto_function f, cpp_classWalk_t *data) {
-    corto_procedure type = corto_procedure(corto_typeof(f));
     corto_id proxyId, c_return, c_parameter, classRef, classVal;
+
     proxyId[0] = '_';
     corto_path(proxyId + 1, g_getCurrent(data->g), f, "_");
     corto_signatureName(proxyId, proxyId);
@@ -110,8 +111,12 @@ static corto_int16 cpp_methodProxy(corto_function f, cpp_classWalk_t *data) {
     cpp_typeFullId(data->g, corto_parentof(f), Cpp_ClassVal, Cpp_ById, classVal);
     cpp_typeFullId(data->g, corto_parentof(f), Cpp_Parameter, Cpp_ByCRef, c_parameter);
 
+    /* Function must be accessible from C */
     g_fileWrite(data->hiddenImpl, "extern \"C\" %s %s(\n", c_return, proxyId);
+
     g_fileIndent(data->hiddenImpl);
+
+    /* Add this parameter to parameters if function has one */
     if (c_procedureHasThis(f)) {
         g_fileWrite(data->hiddenImpl, "%s _this", c_parameter);
         if (f->parameters.length) {
@@ -125,12 +130,14 @@ static corto_int16 cpp_methodProxy(corto_function f, cpp_classWalk_t *data) {
     g_fileWrite(data->hiddenImpl, "{\n");
     g_fileIndent(data->hiddenImpl);
 
-    if (type->kind == CORTO_METHOD) {
+    /* Wrap this parameter in C++ class containing C++ method implementation */
+    if (c_procedureHasThis(f)) {
         corto_id cppType;
         cpp_typeFullId(data->g, corto_parentof(f), Cpp_Return, Cpp_ByVal, cppType);
         g_fileWrite(data->hiddenImpl, "%s _instance(_this);\n", classRef);
     }
 
+    /* Wrap other parameters in C++ classes so they can be passed to method */
     corto_int32 i;
     for (i = 0; i < f->parameters.length; i++) {
         corto_parameter *p = &f->parameters.buffer[i];
@@ -145,6 +152,7 @@ static corto_int16 cpp_methodProxy(corto_function f, cpp_classWalk_t *data) {
         }
     }
 
+    /* Invoke C++ method */
     corto_id methodId;
     strcpy(methodId, corto_idof(f));
     corto_signatureName(methodId, methodId);
@@ -166,6 +174,7 @@ static corto_int16 cpp_methodProxy(corto_function f, cpp_classWalk_t *data) {
     return 0;
 }
 
+/* Add C++ method implementation to source file */
 static corto_int16 cpp_visitProcedure(corto_function f, cpp_classWalk_t *data) {
     corto_id resultId, methodId, methodFullId;
 
@@ -200,6 +209,7 @@ static corto_int16 cpp_visitProcedure(corto_function f, cpp_classWalk_t *data) {
         snippetId = methodId;
     }
 
+    /* Use existing implementation, if exists */
     g_fileWrite(data->source, "/* $begin(%s)", snippetId);
     g_fileIndent(data->source);
     corto_string snippet;
@@ -256,6 +266,8 @@ error:
     return -1;
 }
 
+/* For each member, add getters / setters so application never has to access
+ * corto objects/values directly */
 static corto_int16 cpp_visitMember(corto_serializer s, corto_value *info, void *userData) {
     cpp_classWalk_t *data = userData;
     corto_type t = corto_value_getType(info);
@@ -305,6 +317,7 @@ error:
     return -1;
 }
 
+/* Generate code for a corto interface type (interface, class, struct, procedure) */
 static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     corto_id mainheader, classFactory, class, classVal, classRef, classValId, cId, cValId, varId;
     corto_id baseClass, baseCType;
@@ -331,6 +344,8 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     cpp_openScope(data->header, g_getCurrent(data->g));
 
     g_fileWrite(data->header, "\n");
+
+    /* If type doesn't inherit from anything, it inherits from corto::Object */
     if (!type->base) {
         strcpy(baseClass, "::corto::Object");
         strcpy(baseCType, "corto_object");
@@ -339,9 +354,11 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
         cpp_typeFullId(data->g, type->base, Cpp_Parameter, Cpp_ByCRef, baseCType);
     }
 
+    /* Forward declare factory class */
     g_fileWrite(data->header, "class %s;\n", classFactory);
     g_fileWrite(data->header, "\n");
 
+    /* Add implementation class (C<Type>) */
     g_fileWrite(data->header, "// Implementation of corto type %s\n", corto_fullpath(NULL, type));
     g_fileWrite(data->header, "class %s : public %s\n", class, baseClass);
     g_fileWrite(data->header, "{\n");
@@ -406,6 +423,7 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileWrite(data->header, "};\n");
     g_fileWrite(data->header, "\n");
 
+    // Add class for managing references to type (<Type>Ref)
     g_fileWrite(data->header, "// Reference of corto type %s\n", corto_fullpath(NULL, type));
     g_fileWrite(data->header, "class %s : public %s\n", classRef, class);
     g_fileWrite(data->header, "{\n");
@@ -432,6 +450,7 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileWrite(data->header, "};\n");
     g_fileWrite(data->header, "\n");
 
+    // Add class for managing references to type (<Type>Val)
     g_fileWrite(data->header, "// Value (on stack) of corto type %s\n", corto_fullpath(NULL, type));
     g_fileWrite(data->header, "class %s : public %s\n", classVal, class);
     g_fileWrite(data->header, "{\n");
@@ -458,6 +477,7 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileDedent(data->header);
     g_fileWrite(data->header, "};\n");
 
+    // Add code for fluent factory class (<Type>) */
     if (cpp_fluentDecl((corto_type)type, data)) {
         goto error;
     }
