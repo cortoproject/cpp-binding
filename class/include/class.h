@@ -18,7 +18,7 @@ typedef struct cpp_classWalk_t {
     g_file source;
 } cpp_classWalk_t;
 
-corto_int16 cpp_fluentDecl(corto_type type, cpp_classWalk_t *data);
+corto_int16 cpp__fluentDecl(corto_type type, cpp_classWalk_t *data);
 /* $end */
 
 #ifdef __cplusplus

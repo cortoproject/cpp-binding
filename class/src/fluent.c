@@ -4,9 +4,9 @@
 #include "corto/gen/cpp/class/class.h"
 
 /* Add a fluent method (setter) for each member in the corto type */
-static corto_int16 cpp_fluent_visitMember(corto_serializer s, corto_value *info, void *userData) {
+static corto_int16 cpp__fluent_visitMember(corto_walk_opt* s, corto_value *info, void *userData) {
     cpp_classWalk_t *data = userData;
-    corto_type t = corto_value_getType(info);
+    corto_type t = corto_value_typeof(info);
     corto_member m = info->is.member.t;
 
     corto_id id, cId;
@@ -24,12 +24,12 @@ static corto_int16 cpp_fluent_visitMember(corto_serializer s, corto_value *info,
     return 0;
 }
 
-static corto_int16 cpp_fluent_walkMembers(corto_type type, cpp_classWalk_t *data) {
-    struct corto_serializer_s s;
-    corto_serializerInit(&s);
-    s.metaprogram[CORTO_MEMBER] = cpp_fluent_visitMember;
+static corto_int16 cpp__fluent_walkMembers(corto_type type, cpp_classWalk_t *data) {
+    corto_walk_opt s;
+    corto_walk_init(&s);
+    s.metaprogram[CORTO_MEMBER] = cpp__fluent_visitMember;
     s.metaprogram[CORTO_BASE] = NULL;
-    if (corto_metaWalk(&s, type, data)) {
+    if (corto_metawalk(&s, type, data)) {
         goto error;
     }
     return 0;
@@ -37,7 +37,7 @@ error:
     return -1;
 }
 
-static corto_int16 cpp_fluent_create(corto_type type, cpp_classWalk_t *data) {
+static corto_int16 cpp__fluent_create(corto_type type, cpp_classWalk_t *data) {
     corto_id classRefId, classFactoryId, returnCRef, var;
 
     cpp_varId(data->g, type, var);
@@ -59,7 +59,7 @@ static corto_int16 cpp_fluent_create(corto_type type, cpp_classWalk_t *data) {
     return 0;
 }
 
-static corto_int16 cpp_fluent_declare(corto_type type, cpp_classWalk_t *data) {
+static corto_int16 cpp__fluent_declare(corto_type type, cpp_classWalk_t *data) {
     corto_id classRefId, classFactoryId, returnCRef, var;
 
     cpp_varId(data->g, type, var);
@@ -81,7 +81,7 @@ static corto_int16 cpp_fluent_declare(corto_type type, cpp_classWalk_t *data) {
     return 0;
 }
 
-static corto_int16 cpp_fluent_define(corto_type type, cpp_classWalk_t *data) {
+static corto_int16 cpp__fluent_define(corto_type type, cpp_classWalk_t *data) {
     corto_id classFactoryId;
 
     cpp_typeFullId(data->g, type, Cpp_ClassFactory, Cpp_ById, classFactoryId);
@@ -97,7 +97,7 @@ static corto_int16 cpp_fluent_define(corto_type type, cpp_classWalk_t *data) {
     return 0;
 }
 
-static corto_int16 cpp_fluent_createChild(corto_type type, cpp_classWalk_t *data) {
+static corto_int16 cpp__fluent_createChild(corto_type type, cpp_classWalk_t *data) {
     corto_id classRefId, classFactoryId, returnCRef, var;
 
     cpp_varId(data->g, type, var);
@@ -119,7 +119,7 @@ static corto_int16 cpp_fluent_createChild(corto_type type, cpp_classWalk_t *data
     return 0;
 }
 
-static corto_int16 cpp_fluent_declareChild(corto_type type, cpp_classWalk_t *data) {
+static corto_int16 cpp__fluent_declareChild(corto_type type, cpp_classWalk_t *data) {
     corto_id classRefId, classFactoryId, returnCRef, var;
 
     cpp_varId(data->g, type, var);
@@ -146,7 +146,7 @@ static corto_int16 cpp_fluent_declareChild(corto_type type, cpp_classWalk_t *dat
 }
 
 
-static corto_int16 cpp_fluent_value(corto_type type, cpp_classWalk_t *data) {
+static corto_int16 cpp__fluent_value(corto_type type, cpp_classWalk_t *data) {
     corto_id classValId, classFactoryId, var;
 
     cpp_varId(data->g, type, var);
@@ -160,7 +160,7 @@ static corto_int16 cpp_fluent_value(corto_type type, cpp_classWalk_t *data) {
     return 0;
 }
 
-static corto_int16 cpp_fluent_update(corto_type type, cpp_classWalk_t *data) {
+static corto_int16 cpp__fluent_update(corto_type type, cpp_classWalk_t *data) {
     corto_id classFactoryId;
 
     cpp_typeFullId(data->g, type, Cpp_ClassFactory, Cpp_ById, classFactoryId);
@@ -173,7 +173,7 @@ static corto_int16 cpp_fluent_update(corto_type type, cpp_classWalk_t *data) {
     return 0;
 }
 
-corto_int16 cpp_fluentTemplDecl(corto_type type, cpp_classWalk_t *data) {
+corto_int16 cpp__fluentTemplDecl(corto_type type, cpp_classWalk_t *data) {
     corto_id baseTemplateFactoryId, templateFactoryId, classFactory;
     corto_interface interface = corto_interface(type);
 
@@ -201,7 +201,7 @@ corto_int16 cpp_fluentTemplDecl(corto_type type, cpp_classWalk_t *data) {
         g_fileWrite(data->header, "{ return %s<T>(this->m_this, this->ptr); }\n", baseTemplateFactoryId);
     }
 
-    if (cpp_fluent_walkMembers(type, data)) {
+    if (cpp__fluent_walkMembers(type, data)) {
         goto error;
     }
 
@@ -214,7 +214,7 @@ error:
     return -1;
 }
 
-corto_int16 cpp_fluentDecl(corto_type type, cpp_classWalk_t *data) {
+corto_int16 cpp__fluentDecl(corto_type type, cpp_classWalk_t *data) {
     corto_id cId, var, class, classFactory, classFactoryId, templateFactory;
 
     cpp_typeId(data->g, type, Cpp_Class, class);
@@ -226,7 +226,7 @@ corto_int16 cpp_fluentDecl(corto_type type, cpp_classWalk_t *data) {
 
     g_fileWrite(data->header, "\n");
 
-    if (cpp_fluentTemplDecl(type, data)) {
+    if (cpp__fluentTemplDecl(type, data)) {
         goto error;
     }
 
@@ -239,40 +239,40 @@ corto_int16 cpp_fluentDecl(corto_type type, cpp_classWalk_t *data) {
 
     g_fileWrite(data->header, "%s();\n", classFactory);
     g_fileWrite(data->hiddenImpl,
-      "%s::%s() : %s<%s>(*this, &m_value) { m_type = (corto_type)%s; memset(&m_value, 0, sizeof(m_value)); corto_initp(&m_value, %s);}\n",
+      "%s::%s() : %s<%s>(*this, &m_value) { m_type = (corto_type)%s; memset(&m_value, 0, sizeof(m_value)); corto_ptr_init(&m_value, %s);}\n",
       classFactoryId, classFactory, templateFactory, classFactory, var, var);
 
     g_fileWrite(data->header, "%s(%s& obj);\n", classFactory, class);
     g_fileWrite(data->hiddenImpl,
-      "%s::%s(%s& obj) : %s<%s>(*this, &m_value) { m_type = (corto_type)%s; memset(&m_value, 0, sizeof(m_value)); corto_initp(&m_value, %s);}\n",
+      "%s::%s(%s& obj) : %s<%s>(*this, &m_value) { m_type = (corto_type)%s; memset(&m_value, 0, sizeof(m_value)); corto_ptr_init(&m_value, %s);}\n",
       classFactoryId, classFactory, class, templateFactory, classFactory, var, var);
 
     g_fileWrite(data->header, "%s(%s& obj, corto_object ref);\n", classFactory, class);
     g_fileWrite(data->hiddenImpl,
-      "%s::%s(%s& obj, corto_object ref) : %s<%s>(*this, ref, &m_value) { m_type = (corto_type)%s; memset(&m_value, 0, sizeof(m_value)); corto_initp(&m_value, %s);}\n",
+      "%s::%s(%s& obj, corto_object ref) : %s<%s>(*this, ref, &m_value) { m_type = (corto_type)%s; memset(&m_value, 0, sizeof(m_value)); corto_ptr_init(&m_value, %s);}\n",
       classFactoryId, classFactory, class, templateFactory, classFactory, var, var);
 
     g_fileWrite(data->header, "\n");
 
-    if (cpp_fluent_declare(type, data)) {
+    if (cpp__fluent_declare(type, data)) {
         goto error;
     }
-    if (cpp_fluent_create(type, data)) {
+    if (cpp__fluent_create(type, data)) {
         goto error;
     }
-    if (cpp_fluent_declareChild(type, data)) {
+    if (cpp__fluent_declareChild(type, data)) {
         goto error;
     }
-    if (cpp_fluent_createChild(type, data)) {
+    if (cpp__fluent_createChild(type, data)) {
         goto error;
     }
-    if (cpp_fluent_define(type, data)) {
+    if (cpp__fluent_define(type, data)) {
         goto error;
     }
-    if (cpp_fluent_update(type, data)) {
+    if (cpp__fluent_update(type, data)) {
         goto error;
     }
-    if (cpp_fluent_value(type, data)) {
+    if (cpp__fluent_value(type, data)) {
         goto error;
     }
 

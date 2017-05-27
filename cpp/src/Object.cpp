@@ -17,7 +17,7 @@ Object CoreApi::typeof() {
 }
 
 std::string CoreApi::contentof(std::string contentType) {
-    corto_value v = corto_value_value(m_obj.type(), m_obj.ptr());
+    corto_value v = corto_value_value(m_obj.ptr(), m_obj.type());
     corto_string s = corto_value_contentof(&v, (corto_string)contentType.c_str());
     std::string result = std::string(s);
     corto_dealloc(s);
@@ -41,7 +41,7 @@ Object::Object(corto_object ref) :
   m_ptr(ref),
   m_type(ref ? corto_typeof(ref) : NULL)
 {
-    corto_setref(&m_ref, ref);
+    corto_ptr_setref(&m_ref, ref);
     corto_debug("cpp: %p: construct(ref = %p // %s)\n", this, ref, corto_fullpath(NULL, m_ref));
 }
 
@@ -52,7 +52,7 @@ Object::Object(corto_object ref, void *ptr, corto_type type) :
   m_ptr(ptr),
   m_type(type)
 {
-    corto_setref(&m_ref, ref);
+    corto_ptr_setref(&m_ref, ref);
     corto_debug("cpp: %p: construct(ref = %p, ptr = %p)\n", this, ref, ptr);
 }
 
@@ -63,7 +63,7 @@ Object::Object(const Object& obj) :
   m_ptr(obj.m_ptr),
   m_type(obj.m_ref ? corto_typeof(obj.m_ref) : NULL)
 {
-    corto_setref(&m_ref, obj.m_ref);
+    corto_ptr_setref(&m_ref, obj.m_ref);
     corto_debug("cpp: %p: construct(Object& %p) => ref = %p // %s, ptr = %p\n", this, &obj, m_ref, corto_fullpath(NULL, m_ref), m_ptr);
 }
 
@@ -74,7 +74,7 @@ Object::Object(const Object&& obj) :
   m_ptr(obj.m_ptr),
   m_type(obj.m_ref ? corto_typeof(obj.m_ref) : NULL)
 {
-    corto_setref(&m_ref, obj.m_ref);
+    corto_ptr_setref(&m_ref, obj.m_ref);
     corto_debug("cpp: %p: construct(Object&& %p) => ref = %p, ptr = %p\n", this, &obj, m_ref, m_ptr);
 }
 
@@ -98,7 +98,7 @@ corto_object Object::ref() {
 }
 
 void Object::ref(corto_object obj) {
-    corto_setref(&m_ref, obj);
+    corto_ptr_setref(&m_ref, obj);
     this->ptr(obj);
 }
 
@@ -126,7 +126,7 @@ corto_object TObjectAPI::create(corto_type type, void *value) {
     if (!result) {
         throw corto::exception(corto_lasterr());
     }
-    if (corto_copyp(result, type, value)) {
+    if (corto_ptr_copy(result, type, value)) {
         throw corto::exception(corto_lasterr());
     }
     if (corto_define(result)) {
@@ -152,7 +152,7 @@ corto_object TObjectAPI::createChild(corto::Object parent, std::string id, corto
     if (!result) {
         throw corto::exception(corto_lasterr());
     }
-    if (corto_copyp(result, type, value)) {
+    if (corto_ptr_copy(result, type, value)) {
         throw corto::exception(corto_lasterr());
     }
     if (corto_define(result)) {
@@ -164,7 +164,7 @@ corto_object TObjectAPI::createChild(corto::Object parent, std::string id, corto
 }
 
 void TObjectAPI::define(void *value) {
-    if (corto_copyp(m_ptr, corto_typeof(m_ptr), value)) {
+    if (corto_ptr_copy(m_ptr, corto_typeof(m_ptr), value)) {
         throw corto::exception(corto_lasterr());
     }
     if (corto_define(m_ptr)) {
@@ -180,7 +180,7 @@ void TObjectAPI::update(void *value) {
     if (corto_updateBegin(m_ref)) {
         throw corto::exception(corto_lasterr());
     }
-    if (corto_copyp(m_ref, corto_typeof(m_ref), value)) {
+    if (corto_ptr_copy(m_ref, corto_typeof(m_ref), value)) {
         throw corto::exception(corto_lasterr());
     }
     if (corto_updateEnd(m_ref)) {
@@ -189,7 +189,7 @@ void TObjectAPI::update(void *value) {
 }
 
 void TObjectAPI::fromcontent(std::string contentType, std::string content) {
-    corto_value v = corto_value_value(this->m_type, m_ptr);
+    corto_value v = corto_value_value(m_ptr, this->m_type);
     if (corto_value_fromcontent(&v, (corto_string)contentType.c_str(), (corto_string)content.c_str())) {
         throw corto::exception(corto_lasterr());
     }

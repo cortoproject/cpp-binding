@@ -268,9 +268,9 @@ error:
 
 /* For each member, add getters / setters so application never has to access
  * corto objects/values directly */
-static corto_int16 cpp_visitMember(corto_serializer s, corto_value *info, void *userData) {
+static corto_int16 cpp_visitMember(corto_walk_opt* s, corto_value *info, void *userData) {
     cpp_classWalk_t *data = userData;
-    corto_type t = corto_value_getType(info);
+    corto_type t = corto_value_typeof(info);
     corto_member m = info->is.member.t;
 
     corto_id id, cId, classId, memberId;
@@ -305,11 +305,11 @@ static corto_int16 cpp_visitMember(corto_serializer s, corto_value *info, void *
 }
 
 static corto_int16 cpp_walkMembers(corto_interface type, cpp_classWalk_t *data) {
-    struct corto_serializer_s s;
-    corto_serializerInit(&s);
+    corto_walk_opt s;
+    corto_walk_init(&s);
     s.metaprogram[CORTO_MEMBER] = cpp_visitMember;
     s.metaprogram[CORTO_BASE] = NULL;
-    if (corto_metaWalk(&s, type, data)) {
+    if (corto_metawalk(&s, type, data)) {
         goto error;
     }
     return 0;
@@ -468,7 +468,7 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileWrite(data->header, "%s(%s value);\n",
       classVal, cId);
     g_fileWrite(data->hiddenImpl,
-      "%s::%s(%s value) : %s(NULL, &this->m_value) { corto_copyp(&this->m_value, %s, value); }\n",
+      "%s::%s(%s value) : %s(NULL, &this->m_value) { corto_ptr_copy(&this->m_value, %s, value); }\n",
       classValId, classVal, cId, class, varId);
     g_fileDedent(data->header);
     g_fileWrite(data->header, "private:\n");
@@ -478,7 +478,7 @@ static corto_int16 cpp_visitClass(corto_interface type, cpp_classWalk_t *data) {
     g_fileWrite(data->header, "};\n");
 
     // Add code for fluent factory class (<Type>) */
-    if (cpp_fluentDecl((corto_type)type, data)) {
+    if (cpp__fluentDecl((corto_type)type, data)) {
         goto error;
     }
 
